@@ -22,7 +22,6 @@ import java.net.URL;
 public class AsyncHTTPRequest extends AsyncTask<Tuple<String, String>, Integer, String> {
 
     public boolean isPOST = false;
-    public String urlParameters = "";
     private final String USER_AGENT = "Mozilla/5.0";
 
     /* ASYNCTAKS MEDTHODS */
@@ -41,29 +40,32 @@ public class AsyncHTTPRequest extends AsyncTask<Tuple<String, String>, Integer, 
             return "";
         }
 
-        /* SET POST PARAMS */
+        /* CREATING URLPARAMETERS */
+
+        String separator = "";
+        StringBuilder urlParameters = new StringBuilder();
 
         for (Tuple<String, String> param : params)
         {
-            Log.d("PROPERTY", param.x + " " + param.y);
-            urlConnection.setRequestProperty(param.x, param.y);
+            urlParameters.append("&");
+            urlParameters.append(param.x + "=" + param.y);
+            separator = "&";
         }
 
-        /* SENDING REQUEST */
-
-        /*try {
-            OutputStreamWriter wr = new OutputStreamWriter(urlConnection.getOutputStream());
-            wr.flush();
-            wr.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
+        Log.d("URLPARAMETER", urlParameters.toString());
 
         try {
+            SettingPostParameters(urlConnection, urlParameters.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
+        }
+
+     /*   try {
             urlConnection.connect();
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
 
         /*try {
             Log.d("INFO", Integer.toString(urlConnection.getResponseCode()));
@@ -91,6 +93,22 @@ public class AsyncHTTPRequest extends AsyncTask<Tuple<String, String>, Integer, 
         return "";
     }
 
+    /* SEND HTTP REQUEST */
+
+    private void SettingPostParameters(HttpURLConnection urlConnection, String urlParameters) throws IOException
+    {
+        try {
+            DataOutputStream wr = new DataOutputStream(urlConnection.getOutputStream());
+            wr.writeBytes(urlParameters);
+            wr.flush();
+            wr.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new IOException();
+        }
+    }
+
+
     /* GETTING URL CONNECTION */
 
     private HttpURLConnection getURLConnection(String URLName) throws IOException
@@ -108,7 +126,7 @@ public class AsyncHTTPRequest extends AsyncTask<Tuple<String, String>, Integer, 
 
         try {
             urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setChunkedStreamingMode(0);
+            //urlConnection.setChunkedStreamingMode(0);
         } catch (IOException e) {
             e.printStackTrace();
             throw new IOException();
@@ -131,24 +149,6 @@ public class AsyncHTTPRequest extends AsyncTask<Tuple<String, String>, Integer, 
         urlConnection.setReadTimeout(30 * 1000);
 
         return urlConnection;
-    }
-
-    /* SEND HTTP REQUEST */
-
-    private void updatePostRequest(HttpURLConnection urlConnection) throws IOException
-    {
-        try {
-            DataOutputStream wr = new DataOutputStream(urlConnection.getOutputStream());
-            if (isPOST)
-            {
-                wr.writeBytes(urlParameters);
-            }
-            wr.flush();
-            wr.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new IOException();
-        }
     }
 
     /* GET HTTP RESPONSE */
