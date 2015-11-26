@@ -11,8 +11,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.woivre.thibault.epiandroid.R;
-import com.woivre.thibault.epiandroid.utils.Tuple;
-import com.woivre.thibault.epiandroid.request.AsyncHTTPRequest;
+import com.woivre.thibault.epiandroid.objects.*;
+import com.woivre.thibault.epiandroid.request.RequestManager;
 
 public class Login extends AppCompatActivity {
 
@@ -74,16 +74,17 @@ public class Login extends AppCompatActivity {
         String password = passwordInput.getText().toString();
 
         //AsyncHTTPRequest.RequestPostLogin(login, password);
+        //
 
-        AsyncHTTPRequest ahr = new AsyncHTTPRequest();
-        ahr.isPOST = true;
-
-        Tuple<String, String>[] properties = new Tuple[2];
-
-        properties[0] = new Tuple<String, String>("login", "woivre_t");
-        properties[1] = new Tuple<String, String>("password", "1lEJtLxG");
-
-        ahr.execute(properties);
+        try {
+            EPIJSONObject JObj = RequestManager.LoginRequest(login, password);
+            if (JObj instanceof EPIError)
+            {
+                Log.d("JSONOBJ", ((EPIError) JObj).error.code.toString());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         /* MODIFY WARNING CONTENT */
 

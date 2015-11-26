@@ -21,76 +21,71 @@ import java.net.URL;
 
 public class AsyncHTTPRequest extends AsyncTask<Tuple<String, String>, Integer, String> {
 
+    public String urlAddress = "";
     public boolean isPOST = false;
-    private final String USER_AGENT = "Mozilla/5.0";
 
     /* ASYNCTAKS MEDTHODS */
 
     @Override
     protected String doInBackground(Tuple<String, String> ... params) {
-        HttpURLConnection urlConnection = null;
-        InputStream in = null;
+        HttpURLConnection urlConnection;
+        InputStream in;
+        String rval;
 
         /* CREATING URL CONNECTION OBJ */
 
         try {
-            urlConnection = getURLConnection(ApplicationContextProvider.getContext().getString(R.string.epitech_api_url) + ApplicationContextProvider.getContext().getString(R.string.api_login_url));
+            urlConnection = getURLConnection();
         } catch (IOException e) {
             e.printStackTrace();
             return "";
         }
 
-        /* CREATING URLPARAMETERS */
+        /* SETTING URLPARAMETERS ON POST */
 
         String separator = "";
         StringBuilder urlParameters = new StringBuilder();
 
         for (Tuple<String, String> param : params)
         {
-            urlParameters.append("&");
-            urlParameters.append(param.x + "=" + param.y);
+            urlParameters.append(separator);
+            urlParameters.append(param.x);
+            urlParameters.append("=");
+            urlParameters.append(param.y);
             separator = "&";
         }
 
         Log.d("URLPARAMETER", urlParameters.toString());
 
         try {
-            SettingPostParameters(urlConnection, urlParameters.toString());
+            if (isPOST) {
+                SettingPostParameters(urlConnection, urlParameters.toString());
+            }
         } catch (IOException e) {
             e.printStackTrace();
             return "";
         }
-
-     /*   try {
-            urlConnection.connect();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
-
-        /*try {
-            Log.d("INFO", Integer.toString(urlConnection.getResponseCode()));
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "";
-        }*/
 
         /* GETTING RESPONSE */
 
         try {
             in = urlConnection.getInputStream();
-            Log.d("INFO", Utils.convertInputStreamToString(in));
+            rval = Utils.convertInputStreamToString(in);
+            Log.d("INFO", rval);
         } catch (IOException e) {
             e.printStackTrace();
             in = urlConnection.getErrorStream();
             try {
-                Log.d("INFO", Utils.convertInputStreamToString(in));
+                rval = Utils.convertInputStreamToString(in);
+                Log.d("JSON", rval);
+                return rval;
             } catch (IOException e1) {
                 e1.printStackTrace();
+                return "";
             }
-            return "";
         }
 
-        return "";
+        return rval;
     }
 
     /* SEND HTTP REQUEST */
@@ -108,16 +103,15 @@ public class AsyncHTTPRequest extends AsyncTask<Tuple<String, String>, Integer, 
         }
     }
 
-
     /* GETTING URL CONNECTION */
 
-    private HttpURLConnection getURLConnection(String URLName) throws IOException
+    private HttpURLConnection getURLConnection() throws IOException
     {
-        URL url = null;
-        HttpURLConnection urlConnection = null;
+        URL url;
+        HttpURLConnection urlConnection;
 
         try {
-            url = new URL(URLName);
+            url = new URL(urlAddress);
         }
         catch (MalformedURLException e) {
             e.printStackTrace();
@@ -134,13 +128,13 @@ public class AsyncHTTPRequest extends AsyncTask<Tuple<String, String>, Integer, 
 
         /* SETTING THE REQUEST METHOD */
 
-        if (isPOST == true) {
-            //urlConnection.setRequestMethod("POST");
+        if (isPOST) {
+            urlConnection.setRequestMethod("POST");
             urlConnection.setDoOutput(true);
             Log.d("INFO", "Setting POST Method");
         }
         else {
-            //urlConnection.setRequestMethod("GET");
+            urlConnection.setRequestMethod("GET");
         }
 
         /* SETTING URLCONNECTION PARAMETERS */
@@ -149,21 +143,5 @@ public class AsyncHTTPRequest extends AsyncTask<Tuple<String, String>, Integer, 
         urlConnection.setReadTimeout(30 * 1000);
 
         return urlConnection;
-    }
-
-    /* GET HTTP RESPONSE */
-
-    private String getRequestResponse(HttpURLConnection urlConnection) throws IOException
-    {
-        BufferedReader in = new BufferedReader(
-                new InputStreamReader(urlConnection.getInputStream()));
-        String inputLine;
-        StringBuffer response = new StringBuffer();
-
-        while ((inputLine = in.readLine()) != null) {
-            response.append(inputLine);
-        }
-        in.close();
-        return null;
     }
 }
