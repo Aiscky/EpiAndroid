@@ -1,5 +1,6 @@
 package com.woivre.thibault.epiandroid.activities;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -65,32 +66,25 @@ public class Login extends AppCompatActivity {
         EditText loginInput = (EditText)findViewById(R.id.login_input);
         EditText passwordInput = (EditText)findViewById(R.id.password_input);
 
-        if (loginInput == null || passwordInput == null) {
-            Log.d("ERROR NULL POINTER", "We're fucked boys");
-            return;
-        }
-
         String login = loginInput.getText().toString();
         String password = passwordInput.getText().toString();
-
-        //AsyncHTTPRequest.RequestPostLogin(login, password);
-        //
 
         try {
             EPIJSONObject JObj = RequestManager.LoginRequest(login, password);
             if (JObj instanceof EPIError)
             {
                 Log.d("JSONOBJ", ((EPIError) JObj).error.code.toString());
+                TextView loginMessages = (TextView)findViewById(R.id.login_messages);
+
+                loginMessages.setText(R.string.wrong_creditentials);
+                loginMessages.setVisibility(View.VISIBLE);
+            }
+            else if (JObj instanceof EPIToken) //TODO change sharedpreferences to keep login and password or create file to store data
+            {
+                Log.d("Token", ((EPIToken)JObj).token);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        /* MODIFY WARNING CONTENT */
-
-        TextView loginMessages = (TextView)findViewById(R.id.login_messages);
-
-        loginMessages.setText(R.string.connected_msg);
-        loginMessages.setVisibility(View.VISIBLE);
     }
 }

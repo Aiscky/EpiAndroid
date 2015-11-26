@@ -5,7 +5,7 @@
     <string name="password_placeholder">Password</string>
     <string name="login_button">Log In</string>
 
-    <string name="connected_msg">Congratz your connected to the Epitech API</string>
+    <string name="wrong_creditentials">Wrong Login/Password combination</string>
 
     <string name="epitech_api_url">http://epitech-api.herokuapp.com</string>
     <string name="api_login_url">/login</string>

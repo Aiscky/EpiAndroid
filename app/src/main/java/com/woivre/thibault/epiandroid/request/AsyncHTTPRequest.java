@@ -19,7 +19,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public class AsyncHTTPRequest extends AsyncTask<Tuple<String, String>, Integer, String> {
+public class AsyncHTTPRequest extends AsyncTask<Tuple, Integer, String> {
 
     public String urlAddress = "";
     public boolean isPOST = false;
@@ -27,7 +27,7 @@ public class AsyncHTTPRequest extends AsyncTask<Tuple<String, String>, Integer, 
     /* ASYNCTAKS MEDTHODS */
 
     @Override
-    protected String doInBackground(Tuple<String, String> ... params) {
+    protected String doInBackground(Tuple ... params) {
         HttpURLConnection urlConnection;
         InputStream in;
         String rval;
@@ -46,7 +46,7 @@ public class AsyncHTTPRequest extends AsyncTask<Tuple<String, String>, Integer, 
         String separator = "";
         StringBuilder urlParameters = new StringBuilder();
 
-        for (Tuple<String, String> param : params)
+        for (Tuple param : params)
         {
             urlParameters.append(separator);
             urlParameters.append(param.x);

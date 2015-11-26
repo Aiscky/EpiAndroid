@@ -5,5 +5,5 @@ package com.woivre.thibault.epiandroid.objects;
  */
 
 public class EPIToken extends EPIJSONObject {
-
+    public String token;
 }

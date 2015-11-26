@@ -11,6 +11,8 @@ import com.woivre.thibault.epiandroid.objects.*;
 import com.woivre.thibault.epiandroid.objects.EPIError;
 import com.woivre.thibault.epiandroid.utils.Tuple;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import com.google.gson.Gson;
 
@@ -34,37 +36,43 @@ public class RequestManager {
         return false;
     }
 
-    public static EPIJSONObject LoginRequest(String login, String password) throws Exception
+    public static <T extends EPIJSONObject> EPIJSONObject GenericRequest(String url, Tuple[] params, boolean isPOST, Class<T> returnType) throws Exception
     {
         String JSONData;
         EPIJSONObject rObj = null;
         AsyncHTTPRequest request = new AsyncHTTPRequest();
 
-        request.isPOST = true;
-        request.urlAddress = ApplicationContextProvider.getContext().getString(R.string.epitech_api_url) + ApplicationContextProvider.getContext().getString(R.string.api_login_url);
-        request.execute(new Tuple<String, String>("login", login), new Tuple<String, String>("password", password));
+        request.isPOST = isPOST;
+        request.urlAddress = url;
+        request.execute(params);
         try {
             JSONData = request.get();
         } catch (InterruptedException e) {
-            e.printStackTrace();
-            throw new Exception();
-        } catch (ExecutionException e) {
             e.printStackTrace();
             throw new Exception();
         }
 
         /*  HANDLING GSON DATA */
 
-        Log.d("JSON", JSONData);
 
         if (isResponseError(JSONData)) {
-            Log.d("INFO", "Has Error");
             rObj = new Gson().fromJson(JSONData, EPIError.class);
-            Log.d("INFO", ((EPIError)rObj).toString());
         }
         else {
-            //rval = gson.fromJson(JSONData, String.class);
+            rObj = new Gson().fromJson(JSONData, returnType);
         }
+
+        return rObj;
+    }
+
+    public static EPIJSONObject LoginRequest(String login, String password) throws Exception
+    {
+        String url = ApplicationContextProvider.getContext().getString(R.string.epitech_api_url) + ApplicationContextProvider.getContext().getString(R.string.api_login_url);
+
+        Tuple[] params = new Tuple[2];
+        params[0] = new Tuple("login", login);
+        params[1] = new Tuple("password", password);
+        EPIJSONObject rObj = GenericRequest(url, params, true, EPIToken.class);
         return rObj;
     }
 }
