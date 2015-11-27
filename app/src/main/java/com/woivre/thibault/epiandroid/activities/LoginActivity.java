@@ -1,5 +1,6 @@
 package com.woivre.thibault.epiandroid.activities;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -14,11 +15,14 @@ import android.widget.TextView;
 import com.woivre.thibault.epiandroid.R;
 import com.woivre.thibault.epiandroid.objects.*;
 import com.woivre.thibault.epiandroid.request.RequestManager;
+import com.woivre.thibault.epiandroid.utils.Utils;
 
-public class Login extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
 
     public String Login;
     public String Token;
+
+    public static final String TOKEN = "TOKEN";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,27 +65,47 @@ public class Login extends AppCompatActivity {
 
     public void loginSubmit(View view)
     {
+        TextView loginMessages = (TextView)findViewById(R.id.login_messages);
+        loginMessages.setVisibility(View.GONE);
+
+        /* TEST CONNECTION */
+
+        if (!Utils.isNetworkAvailable()) //TODO Create your own network exception
+        {
+            loginMessages.setText(R.string.not_connected);
+            loginMessages.setVisibility(View.VISIBLE);
+
+            return;
+        }
+
         /* TRY TO CONNECT TO API */
 
         EditText loginInput = (EditText)findViewById(R.id.login_input);
         EditText passwordInput = (EditText)findViewById(R.id.password_input);
 
-        String login = loginInput.getText().toString();
-        String password = passwordInput.getText().toString();
+        //TODO Put back the input
+
+        /*String login = loginInput.getText().toString();
+        String password = passwordInput.getText().toString();*/
+        String login = "woivre_t";
+        String password = "1lEJtLxG";
 
         try {
             EPIJSONObject JObj = RequestManager.LoginRequest(login, password);
             if (JObj instanceof EPIError)
             {
                 Log.d("JSONOBJ", ((EPIError) JObj).error.code.toString());
-                TextView loginMessages = (TextView)findViewById(R.id.login_messages);
 
                 loginMessages.setText(R.string.wrong_creditentials);
                 loginMessages.setVisibility(View.VISIBLE);
             }
             else if (JObj instanceof EPIToken) //TODO change sharedpreferences to keep login and password or create file to store data
             {
-                Log.d("Token", ((EPIToken)JObj).token);
+                //Log.d("Token", ((EPIToken)JObj).token);
+                Intent intent = new Intent(this, WelcomeActivity.class);
+                intent.putExtra(TOKEN, ((EPIToken)JObj).token);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
             }
         } catch (Exception e) {
             e.printStackTrace();

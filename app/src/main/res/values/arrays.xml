@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="mTitles">
+        <item>Welcome</item>
+        <item>Planning</item>
+        <item>Profil</item>
+        <item>Projects</item>
+        <item>Modules</item>
+    </array>
+</resources>

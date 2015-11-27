@@ -6,7 +6,11 @@
     <string name="login_button">Log In</string>
 
     <string name="wrong_creditentials">Wrong Login/Password combination</string>
+    <string name="not_connected">No network available</string>
 
     <string name="epitech_api_url">http://epitech-api.herokuapp.com</string>
     <string name="api_login_url">/login</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

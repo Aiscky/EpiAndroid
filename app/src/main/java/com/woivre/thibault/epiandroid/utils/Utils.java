@@ -1,5 +1,11 @@
 package com.woivre.thibault.epiandroid.utils;
 
+import android.net.ConnectivityManager;
+import android.content.Context;
+import android.net.NetworkInfo;
+
+import com.woivre.thibault.epiandroid.context.ApplicationContextProvider;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,5 +30,13 @@ public class Utils {
             throw new IOException();
         }
         return response.toString();
+    }
+
+    public static boolean isNetworkAvailable()
+    {
+
+        ConnectivityManager cm = (ConnectivityManager) (ApplicationContextProvider.getContext().getSystemService(ApplicationContextProvider.getContext().CONNECTIVITY_SERVICE));
+        NetworkInfo ni = cm.getActiveNetworkInfo();
+        return (ni != null && ni.isConnectedOrConnecting());
     }
 }
