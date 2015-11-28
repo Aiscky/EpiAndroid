@@ -115,4 +115,40 @@ public class RequestManager {
 
         return rObjList;
     }
+
+    public static EPIJSONObject[] AlertsRequest(String token) throws Exception
+    {
+        String JSONData;
+        EPIJSONObject[] rObjList = null;
+        AsyncHTTPRequest request = new AsyncHTTPRequest();
+
+        if (!Utils.isNetworkAvailable())
+            throw new EPINetworkException();
+
+        request.isPOST = true;
+        request.urlAddress = ApplicationContextProvider.getContext().getString(R.string.epitech_api_url) + ApplicationContextProvider.getContext().getString(R.string.api_alerts_url);
+
+        Tuple[] params = new Tuple[1];
+        params[0] = new Tuple("token", token);
+
+        request.execute(params);
+
+        try {
+            JSONData = request.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            throw new Exception();
+        }
+
+        if (isResponseError(JSONData)) {
+            EPIError error = new Gson().fromJson(JSONData, EPIError.class);
+            rObjList = new EPIJSONObject[1];
+            rObjList[0] = error;
+        }
+        else {
+            rObjList = new Gson().fromJson(JSONData, EPIAlert[].class);
+        }
+
+        return rObjList;
+    }
 }

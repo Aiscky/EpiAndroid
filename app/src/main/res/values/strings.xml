@@ -12,5 +12,6 @@
     <string name="epitech_api_url">http://epitech-api.herokuapp.com</string>
     <string name="api_login_url">/login</string>
     <string name="api_messages_url">/messages</string>
+    <string name="api_alerts_url">/alerts</string>
 
 </resources>

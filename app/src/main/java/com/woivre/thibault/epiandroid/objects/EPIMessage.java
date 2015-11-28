@@ -12,7 +12,7 @@ public class EPIMessage extends EPIJSONObject {
     public String content;
     public String date;
 
-    private class User
+    public class User
     {
         String picture;
         String title;
