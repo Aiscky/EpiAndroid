@@ -3,8 +3,10 @@
     <array name="mTitles">
         <item>Welcome</item>
         <item>Planning</item>
-        <item>Profil</item>
         <item>Projects</item>
         <item>Modules</item>
+        <item>Grades</item>
+        <item>Profil</item>
+        <item>Trombi</item>
     </array>
 </resources>

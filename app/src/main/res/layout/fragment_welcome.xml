@@ -4,10 +4,19 @@
     android:layout_height="match_parent"
     tools:context=".fragments.WelcomeFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout android:id="@+id/alertes_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:orientation="vertical">
+
+    </LinearLayout>
+
+    <LinearLayout android:id="@+id/messages_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+
+    </LinearLayout>
 
 </FrameLayout>

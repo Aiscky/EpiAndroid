@@ -55,16 +55,21 @@ public class AsyncHTTPRequest extends AsyncTask<Tuple, Integer, String> {
             separator = "&";
         }
 
-        Log.d("URLPARAMETER", urlParameters.toString());
-
         try {
             if (isPOST) {
                 SettingPostParameters(urlConnection, urlParameters.toString());
+            }
+            else {
+                urlAddress += "?" + urlParameters.toString();
+                urlConnection.setRequestProperty("Accept-Charset", "UTF-8");
             }
         } catch (IOException e) {
             e.printStackTrace();
             return "";
         }
+
+        Log.d("URL", urlAddress);
+        Log.d("URLPARAMETER", urlParameters.toString());
 
         /* GETTING RESPONSE */
 
@@ -135,6 +140,7 @@ public class AsyncHTTPRequest extends AsyncTask<Tuple, Integer, String> {
         }
         else {
             urlConnection.setRequestMethod("GET");
+            urlConnection.setDoOutput(false);
         }
 
         /* SETTING URLCONNECTION PARAMETERS */
