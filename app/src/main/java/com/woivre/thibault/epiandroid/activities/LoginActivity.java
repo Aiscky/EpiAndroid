@@ -102,6 +102,7 @@ public class LoginActivity extends AppCompatActivity {
             loginMessages.setText(R.string.not_connected);
             loginMessages.setVisibility(View.VISIBLE);
         } catch (Exception e) {
+            e.printStackTrace();
             loginMessages.setText(R.string.app_error);
             loginMessages.setVisibility(View.VISIBLE);
         }

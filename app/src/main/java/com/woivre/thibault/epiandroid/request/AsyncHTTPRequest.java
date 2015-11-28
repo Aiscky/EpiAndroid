@@ -32,16 +32,7 @@ public class AsyncHTTPRequest extends AsyncTask<Tuple, Integer, String> {
         InputStream in;
         String rval;
 
-        /* CREATING URL CONNECTION OBJ */
-
-        try {
-            urlConnection = getURLConnection();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "";
-        }
-
-        /* SETTING URLPARAMETERS ON POST */
+        /* CREATING PARAMETERS */
 
         String separator = "";
         StringBuilder urlParameters = new StringBuilder();
@@ -55,13 +46,22 @@ public class AsyncHTTPRequest extends AsyncTask<Tuple, Integer, String> {
             separator = "&";
         }
 
+        if (isPOST == false) {
+            urlAddress += "?" + urlParameters.toString();
+        }
+
+        /* CREATING URL CONNECTION OBJ */
+
+        try {
+            urlConnection = getURLConnection();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
+        }
+
         try {
             if (isPOST) {
                 SettingPostParameters(urlConnection, urlParameters.toString());
-            }
-            else {
-                urlAddress += "?" + urlParameters.toString();
-                urlConnection.setRequestProperty("Accept-Charset", "UTF-8");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -76,13 +76,17 @@ public class AsyncHTTPRequest extends AsyncTask<Tuple, Integer, String> {
         try {
             in = urlConnection.getInputStream();
             rval = Utils.convertInputStreamToString(in);
+
             Log.d("INFO", rval);
+
         } catch (IOException e) {
             e.printStackTrace();
             in = urlConnection.getErrorStream();
             try {
                 rval = Utils.convertInputStreamToString(in);
+
                 Log.d("JSON", rval);
+
                 return rval;
             } catch (IOException e1) {
                 e1.printStackTrace();
@@ -92,6 +96,7 @@ public class AsyncHTTPRequest extends AsyncTask<Tuple, Integer, String> {
 
         return rval;
     }
+
 
     /* SEND HTTP REQUEST */
 
@@ -125,7 +130,6 @@ public class AsyncHTTPRequest extends AsyncTask<Tuple, Integer, String> {
 
         try {
             urlConnection = (HttpURLConnection) url.openConnection();
-            //urlConnection.setChunkedStreamingMode(0);
         } catch (IOException e) {
             e.printStackTrace();
             throw new IOException();
@@ -136,11 +140,9 @@ public class AsyncHTTPRequest extends AsyncTask<Tuple, Integer, String> {
         if (isPOST) {
             urlConnection.setRequestMethod("POST");
             urlConnection.setDoOutput(true);
-            Log.d("INFO", "Setting POST Method");
         }
         else {
             urlConnection.setRequestMethod("GET");
-            urlConnection.setDoOutput(false);
         }
 
         /* SETTING URLCONNECTION PARAMETERS */

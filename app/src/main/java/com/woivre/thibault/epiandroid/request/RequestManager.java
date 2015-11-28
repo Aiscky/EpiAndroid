@@ -6,6 +6,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.TypeAdapter;
 import com.woivre.thibault.epiandroid.R;
 import com.woivre.thibault.epiandroid.context.ApplicationContextProvider;
 import com.woivre.thibault.epiandroid.objects.*;
@@ -150,5 +151,41 @@ public class RequestManager {
         }
 
         return rObjList;
+    }
+
+    public static EPIJSONObject UserRequest(String token, String login) throws Exception
+    {
+        String JSONData;
+        EPIJSONObject rObj = null;
+        AsyncHTTPRequest request = new AsyncHTTPRequest();
+
+        if (!Utils.isNetworkAvailable())
+            throw new EPINetworkException();
+
+        request.isPOST = false;
+        request.urlAddress = ApplicationContextProvider.getContext().getString(R.string.epitech_api_url) + ApplicationContextProvider.getContext().getString(R.string.api_user_url);
+
+        Tuple[] params = new Tuple[2];
+        params[0] = new Tuple("token", token);
+        params[1] = new Tuple("user", login);
+
+        request.execute(params);
+
+        try {
+            JSONData = request.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            throw new Exception();
+        }
+
+        if (isResponseError(JSONData)) {
+            rObj = new Gson().fromJson(JSONData, EPIError.class);
+        }
+        else {
+            JSONData = "{" + JSONData;
+            rObj = new Gson().fromJson(JSONData, EPIUser.class);
+        }
+
+        return rObj;
     }
 }

@@ -13,5 +13,6 @@
     <string name="api_login_url">/login</string>
     <string name="api_messages_url">/messages</string>
     <string name="api_alerts_url">/alerts</string>
+    <string name="api_user_url">/user</string>
 
 </resources>
