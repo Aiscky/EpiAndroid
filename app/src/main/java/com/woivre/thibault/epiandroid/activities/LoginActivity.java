@@ -89,7 +89,7 @@ public class LoginActivity extends AppCompatActivity {
                 loginMessages.setText(R.string.wrong_creditentials);
                 loginMessages.setVisibility(View.VISIBLE);
             }
-            else if (JObj instanceof EPIToken) //TODO change sharedpreferences to keep login and password or create file to store data
+            else if (JObj instanceof EPIToken)
             {
                 Intent intent = new Intent(this, MainActivity.class);
                 intent.putExtra(TOKEN, ((EPIToken)JObj).token);

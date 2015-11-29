@@ -8,14 +8,20 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.woivre.thibault.epiandroid.R;
 import com.woivre.thibault.epiandroid.activities.LoginActivity;
 import com.woivre.thibault.epiandroid.activities.MainActivity;
 import com.woivre.thibault.epiandroid.adapters.ModulesAdapter;
+import com.woivre.thibault.epiandroid.adapters.PlanningAdapter;
 import com.woivre.thibault.epiandroid.objects.EPIAllModules;
 import com.woivre.thibault.epiandroid.objects.EPIError;
 import com.woivre.thibault.epiandroid.objects.EPIJSONObject;
@@ -32,7 +38,6 @@ public class ModulesFragment extends android.app.Fragment {
     String token;
     String location;
     String course_code;
-    Double currentYear;
     ListView ModulesListView;
 
     public ModulesFragment() {
@@ -60,7 +65,6 @@ public class ModulesFragment extends android.app.Fragment {
         try {
             EPIJSONObject rObj = RequestManager.UserRequest(this.token, this.login);
             if (rObj instanceof EPIError) {
-                //TODO Make EpiError
             }
             else
             {
@@ -73,25 +77,26 @@ public class ModulesFragment extends android.app.Fragment {
             e.printStackTrace();
         }
 
-        currentYear = Double.parseDouble( new SimpleDateFormat("yyyy").format(new java.util.Date()));
-        ((TextView) view.findViewById(R.id.modules_scolaryear)).setText(((Integer) currentYear.intValue()).toString());
-
-        Log.d("INFO", ((TextView) view.findViewById(R.id.modules_scolaryear)).getText().toString());
 
         /* GETTING ALL MODULES INFOS */
 
         ArrayList<EPIAllModules.Item> modulesData = new ArrayList<EPIAllModules.Item>();
+        ArrayList<String> semesters = new ArrayList<String>();
 
         try {
-            EPIJSONObject rObj = RequestManager.AllModulesRequest(token, currentYear, location, course_code);
+            EPIJSONObject rObj = RequestManager.AllModulesRequest(token, 1999.0, location, course_code);
             if (rObj instanceof EPIError) {
-                //TODO Make EpiError
+
             }
             else
             {
                 for (EPIAllModules.Item item : ((EPIAllModules) rObj).items)
                 {
                     modulesData.add(item);
+                    if (!semesters.contains(((Integer) item.semester.intValue()).toString()))
+                    {
+                        semesters.add(((Integer) item.semester.intValue()).toString());
+                    }
                 }
             }
         } catch (EPINetworkException e) {
@@ -103,49 +108,50 @@ public class ModulesFragment extends android.app.Fragment {
         /* DYNAMICALLY FILL VIEW */
 
         ModulesListView = (ListView)view.findViewById(R.id.modules_list);
-        ModulesListView.setAdapter(new ModulesAdapter(this.getActivity(), modulesData));
+        ModulesListView.setAdapter(new ModulesAdapter(this.getActivity(), modulesData, this.token));
 
-        /* SET BUTTONSLISTENER */
+        /* SET SPINNER */
 
-        ((Button) view.findViewById(R.id.modules_prev)).setOnClickListener(new View.OnClickListener() {
+        final Spinner modulesSpinner = (Spinner)view.findViewById(R.id.modules_spinner);
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item);
+
+        modulesSpinner.setAdapter(spinnerAdapter);
+        spinnerAdapter.addAll(semesters);
+        ((ArrayAdapter<String>)modulesSpinner.getAdapter()).notifyDataSetChanged();
+
+        modulesSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onClick(View v) {
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                ((ModulesAdapter) ((ListView) getView().findViewById(R.id.modules_list)).getAdapter()).semesterFilter = Double.parseDouble((String) parent.getItemAtPosition(position));
+                ((ModulesAdapter) ((ListView) getView().findViewById(R.id.modules_list)).getAdapter()).filter();
+            }
 
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                ((ModulesAdapter) ((ListView) getView().findViewById(R.id.modules_list)).getAdapter()).semesterFilter = null;
+                ((ModulesAdapter) ((ListView) getView().findViewById(R.id.modules_list)).getAdapter()).filter();
             }
         });
 
-        ((Button) view.findViewById(R.id.modules_prev)).setOnClickListener(new View.OnClickListener() {
+        /* SET CHECKBOX */
+
+        ((CheckBox)view.findViewById(R.id.modules_registeredcheckbox)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                ((ModulesAdapter)ModulesListView.getAdapter()).registeredFilter = isChecked;
+                ((ModulesAdapter)ModulesListView.getAdapter()).filter();
+            }
+        });
+
+        /* SET BUTTONLISTENER */
+
+        ((Button) view.findViewById(R.id.modules_collapse)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                v.getRootView().findViewById(R.id.modules_infoslayout).setVisibility(View.GONE);
             }
         });
 
         return view;
-    }
-
-    private void GetModulesFromYear()
-    {
-        ArrayList<EPIAllModules.Item> modulesData = new ArrayList<EPIAllModules.Item>();
-
-        try {
-            EPIJSONObject rObj = RequestManager.AllModulesRequest(token, currentYear, location, course_code);
-            if (rObj instanceof EPIError) {
-                //TODO Make EpiError
-            }
-            else
-            {
-                for (EPIAllModules.Item item : ((EPIAllModules) rObj).items)
-                {
-                    modulesData.add(item);
-                }
-            }
-        } catch (EPINetworkException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        ((ModulesAdapter) ModulesListView.getAdapter()).ModulesList = modulesData;
     }
 }

@@ -4,39 +4,104 @@
     android:layout_height="match_parent"
     tools:context=".fragments.ModulesFragment">
 
-
-    <LinearLayout android:id="@+id/modules_toplayout"
+    <LinearLayout android:id="@+id/modules_semesterlayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="10dp">
+        android:orientation="horizontal">
 
-        <Button android:id="@+id/modules_prev"
-            android:layout_width="wrap_content"
+        <TextView android:id="@+id/modules_semesterhint"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="@string/modulesprev_text"/>
-
-        <TextView
-            android:id="@+id/modules_scolaryear"
             android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textSize="20dp"
-            android:layout_marginBottom="10dp"
-            android:layout_marginTop="10dp" />
+            android:text="Semester" />
 
-        <Button android:id="@+id/modules_next"
-            android:layout_width="wrap_content"
+        <Spinner android:id="@+id/modules_spinner"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="@string/modulesnext_text"/>
+            android:layout_weight="1"
+            android:layout_below="@id/modules_semesterhint"/>
 
     </LinearLayout>
+
+    <CheckBox android:id="@+id/modules_registeredcheckbox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/modules_semesterlayout"
+        android:text="@string/modules_checkboxregistered"
+        android:layout_marginBottom="10dp" />
+
+    <TextView android:id="@+id/modules_msg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_below="@id/modules_registeredcheckbox"
+        android:layout_marginBottom="10dp" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@id/modules_msg"
+        android:visibility="gone"
+        android:id="@+id/modules_infoslayout">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/module_descriptionhint"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"/>
+
+            <TextView android:id="@+id/module_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/module_competencehint"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp" />
+
+            <TextView android:id="@+id/module_competence"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_weight="1"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/modulegrade_hint"/>
+
+                <TextView android:id="@+id/module_grade"
+                    android:layout_weight="1"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <Button android:id="@+id/modules_collapse"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/modulecollapse_text"/>
+
+        </LinearLayout>
+
+    </ScrollView>
 
 
     <ListView android:id="@+id/modules_list"
         android:layout_width="match_parent"
-        android:layout_height="fill_parent"
-        android:layout_below="@+id/modules_toplayout"/>
+        android:layout_height="match_parent"
+        android:layout_below="@id/modules_infoslayout"/>
 
 </RelativeLayout>

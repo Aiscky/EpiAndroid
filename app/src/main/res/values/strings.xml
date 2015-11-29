@@ -19,11 +19,30 @@
     <string name="api_validatetoken_url">/token</string>
     <string name="api_grades_url">/marks</string>
     <string name="api_allmodules_url">/allmodules</string>
+    <string name="api_module_url">/module</string>
 
     <string name="checkboxregistered_hint">Only Registered activities</string>
     <string name="checkboxmodules_hint">Only Modules activities</string>
 
+    <string name="modules_checkboxregistered">Only registered modules</string>
+
     <string name="modulesprev_text">Previous</string>
     <string name="modulesnext_text">Next</string>
+    <string name="moduleregister_text">Register</string>
+    <string name="moduleunregister_text">Unregister</string>
+    <string name="moduleexpand_text">Expand</string>
+    <string name="modulecollapse_text">Hide</string>
+    <string name="modulegrade_hint">Grade</string>
+    <string name="module_semesterhint">Semester</string>
+    <string name="module_descriptionhint">Description</string>
+    <string name="module_competencehint">Competence</string>
 
+    <string name="planning_nextday">Next day</string>
+    <string name="planning_prevday">Previous day</string>
+
+    <string name="project_checkboxregistered_hint">Only Registered Projects</string>
+    <string name="title_project">Projects</string>
+    <string name="api_projects_url">/projects</string>
+    <string name="api_projectregister_url">/project</string>
+    
 </resources>

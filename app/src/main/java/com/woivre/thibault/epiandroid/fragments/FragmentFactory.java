@@ -18,6 +18,9 @@ public class FragmentFactory {
             case 1:
                 fragment = new PlanningFragment();
                 break;
+            case 2:
+                fragment = new ProjectFragment();
+                break;
             case 3:
                 fragment = new ModulesFragment();
                 break;

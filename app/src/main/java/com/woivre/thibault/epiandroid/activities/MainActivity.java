@@ -15,8 +15,6 @@ import com.woivre.thibault.epiandroid.R;
 import com.woivre.thibault.epiandroid.fragments.FragmentFactory;
 import com.woivre.thibault.epiandroid.fragments.WelcomeFragment;
 
-//TODO Make Button in the title bar !
-
 public class MainActivity extends AppCompatActivity {
 
     private String[] mEpiTitle;

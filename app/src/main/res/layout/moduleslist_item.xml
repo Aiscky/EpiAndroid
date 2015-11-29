@@ -8,6 +8,28 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
+    <TextView android:id="@+id/modules_scolaryear"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_weight="1"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/module_semesterhint"/>
+
+        <TextView android:id="@+id/module_semester"
+            android:layout_weight="1"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -25,5 +47,20 @@
             android:layout_height="wrap_content" />
 
     </LinearLayout>
+
+    <Button android:id="@+id/module_expand"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/moduleexpand_text"/>
+
+    <Button android:id="@+id/module_register"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/moduleregister_text"/>
+
+    <Button android:id="@+id/module_unregister"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/moduleunregister_text"/>
 
 </LinearLayout>

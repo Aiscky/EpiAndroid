@@ -1,0 +1,39 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.ProjectFragment">
+
+    <TextView
+        android:id="@+id/title_project"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="20dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        android:text="@string/title_project"/>
+
+    <TextView android:id="@+id/project_alert"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/planning_buttonlayout"
+        android:layout_centerHorizontal="true"
+        android:textSize="15dp"
+        android:visibility="gone"
+        android:layout_marginBottom="5dp"/>
+
+    <CheckBox android:id="@+id/project_registeredcheckbox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/title_project"
+        android:layout_marginBottom="20dp"
+        android:text="@string/project_checkboxregistered_hint"/>
+
+    <ListView android:id="@+id/project_list"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/project_registeredcheckbox"/>
+
+</RelativeLayout>

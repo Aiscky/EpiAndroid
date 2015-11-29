@@ -438,4 +438,228 @@ public class RequestManager {
         }
         return myDrawable;
     }
+
+    public static EPIJSONObject ModuleRequest(String token, String scolaryear, String codemodule, String codeinstance) throws Exception
+    {
+        String JSONData;
+        EPIJSONObject rObj = null;
+        AsyncHTTPRequest request = new AsyncHTTPRequest();
+
+        if (!Utils.isNetworkAvailable())
+            throw new EPINetworkException();
+
+        request.isPOST = false;
+        request.urlAddress = ApplicationContextProvider.getContext().getString(R.string.epitech_api_url) + ApplicationContextProvider.getContext().getString(R.string.api_module_url);
+
+        Tuple[] params = new Tuple[4];
+        params[0] = new Tuple("token", token);
+        params[1] = new Tuple("scolaryear", scolaryear);
+        params[2] = new Tuple("codemodule", codemodule);
+        params[3] = new Tuple("codeinstance", codeinstance);
+
+        request.execute(params);
+
+        try
+        {
+            JSONData = request.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            throw new Exception();
+        }
+
+        if (isResponseError(JSONData)) {
+            rObj = new Gson().fromJson(JSONData, EPIError.class);
+        }
+        else
+        {
+            JSONData = "{" + JSONData;
+            Log.d("JSONData", JSONData);
+            rObj = new Gson().fromJson(JSONData, EPIModule.class);
+        }
+
+        return rObj;
+    }
+
+    public static EPIError RegisterModuleRequest(String token, String scolaryear, String codemodule, String codeinstance) throws Exception
+    {
+        String JSONData;
+        AsyncHTTPRequest request = new AsyncHTTPRequest();
+
+        if (!Utils.isNetworkAvailable())
+            throw new EPINetworkException();
+
+        request.isPOST = true;
+        request.urlAddress = ApplicationContextProvider.getContext().getString(R.string.epitech_api_url) + ApplicationContextProvider.getContext().getString(R.string.api_module_url);
+
+        Tuple[] params = new Tuple[4];
+        params[0] = new Tuple("token", token);
+        params[1] = new Tuple("scolaryear", scolaryear);
+        params[2] = new Tuple("codemodule", codemodule);
+        params[3] = new Tuple("codeinstance", codeinstance);
+
+        request.execute(params);
+
+        try {
+            JSONData = request.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            throw new Exception();
+        }
+
+        if (!JSONData.isEmpty()) {
+            EPIError error = new EPIError();
+            return error;
+        }
+
+        return null;
+    }
+
+    public static EPIError UnregisterModuleRequest(String token, String scolaryear, String codemodule, String codeinstance) throws Exception
+    {
+        String JSONData;
+        AsyncHTTPRequest request = new AsyncHTTPRequest();
+
+        if (!Utils.isNetworkAvailable())
+            throw new EPINetworkException();
+
+        request.isPOST = false;
+        request.isDelete = true;
+        request.urlAddress = ApplicationContextProvider.getContext().getString(R.string.epitech_api_url) + ApplicationContextProvider.getContext().getString(R.string.api_module_url);
+
+        Tuple[] params = new Tuple[4];
+        params[0] = new Tuple("token", token);
+        params[1] = new Tuple("scolaryear", scolaryear);
+        params[2] = new Tuple("codemodule", codemodule);
+        params[3] = new Tuple("codeinstance", codeinstance);
+
+        request.execute(params);
+
+        try {
+            JSONData = request.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            throw new Exception();
+        }
+
+        if (!JSONData.isEmpty()) {
+            EPIError error = new EPIError();
+            return error;
+        }
+
+        return null;
+    }
+
+    public static EPIError UnregisterProjectRequest(String token, String scolaryear, String codemodule, String codeinstance, String codeacti) throws Exception
+    {
+        String JSONData;
+        AsyncHTTPRequest request = new AsyncHTTPRequest();
+
+        if (!Utils.isNetworkAvailable())
+            throw new EPINetworkException();
+
+        request.isPOST = false;
+        request.isDelete = true;
+        request.urlAddress = ApplicationContextProvider.getContext().getString(R.string.epitech_api_url) + ApplicationContextProvider.getContext().getString(R.string.api_projectregister_url);
+
+        Tuple[] params = new Tuple[5];
+        params[0] = new Tuple("token", token);
+        params[1] = new Tuple("scolaryear", scolaryear);
+        params[2] = new Tuple("codemodule", codemodule);
+        params[3] = new Tuple("codeinstance", codeinstance);
+        params[4] = new Tuple("codeacti", codeacti);
+
+        request.execute(params);
+
+        try {
+            JSONData = request.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            throw new Exception();
+        }
+
+        if (!JSONData.isEmpty()) {
+            EPIError error = new EPIError();
+            return error;
+        }
+
+        return null;
+    }
+
+    public static EPIError RegisterProjectRequest(String token, String scolaryear, String codemodule, String codeinstance, String codeacti) throws Exception
+    {
+        String JSONData;
+        AsyncHTTPRequest request = new AsyncHTTPRequest();
+
+        if (!Utils.isNetworkAvailable())
+            throw new EPINetworkException();
+
+        request.isPOST = true;
+        request.urlAddress = ApplicationContextProvider.getContext().getString(R.string.epitech_api_url) + ApplicationContextProvider.getContext().getString(R.string.api_projectregister_url);
+
+        Tuple[] params = new Tuple[5];
+        params[0] = new Tuple("token", token);
+        params[1] = new Tuple("scolaryear", scolaryear);
+        params[2] = new Tuple("codemodule", codemodule);
+        params[3] = new Tuple("codeinstance", codeinstance);
+        params[4] = new Tuple("codeacti", codeacti);
+
+        request.execute(params);
+
+        try {
+            JSONData = request.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            throw new Exception();
+        }
+
+        if (!JSONData.isEmpty()) {
+            EPIError error = new EPIError();
+            return error;
+        }
+
+        return null;
+    }
+
+    public static EPIJSONObject[] ProjectsRequest(String token) throws Exception
+    {
+        String JSONData;
+        EPIJSONObject[] rObjList = null;
+        AsyncHTTPRequest request = new AsyncHTTPRequest();
+
+        if (!Utils.isNetworkAvailable())
+            throw new EPINetworkException();
+
+        request.isPOST = false;
+        request.urlAddress = ApplicationContextProvider.getContext().getString(R.string.epitech_api_url) + ApplicationContextProvider.getContext().getString(R.string.api_projects_url);
+
+        Tuple[] params = new Tuple[1];
+        params[0] = new Tuple("token", token);
+
+        request.execute(params);
+
+        try {
+            JSONData = request.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            throw new Exception();
+        }
+
+        Log.d("JSON", JSONData);
+
+        if (isResponseError(JSONData)) {
+            EPIError error = new Gson().fromJson(JSONData, EPIError.class);
+            rObjList = new EPIJSONObject[1];
+            rObjList[0] = error;
+        }
+        else if (JSONData.startsWith("{") && JSONData.endsWith("}"))
+        {
+            rObjList = new EPIProject[0];
+        }
+        else
+        {
+            rObjList = new Gson().fromJson(JSONData, EPIProject[].class);
+        }
+
+        return rObjList;
+    }
 }
