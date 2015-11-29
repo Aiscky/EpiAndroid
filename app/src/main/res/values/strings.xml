@@ -14,5 +14,16 @@
     <string name="api_messages_url">/messages</string>
     <string name="api_alerts_url">/alerts</string>
     <string name="api_user_url">/user</string>
+    <string name="api_planning_url">/planning</string>
+    <string name="api_eventregister_url">/event</string>
+    <string name="api_validatetoken_url">/token</string>
+    <string name="api_grades_url">/marks</string>
+
+    <string name="checkboxregistered_hint">Only Registered activities</string>
+    <string name="checkboxmodules_hint">Only Modules activities</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 
 </resources>

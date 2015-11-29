@@ -75,10 +75,10 @@ public class LoginActivity extends AppCompatActivity {
         EditText loginInput = (EditText)findViewById(R.id.login_input);
         EditText passwordInput = (EditText)findViewById(R.id.password_input);
 
-        //TODO Put back the input
-
         /*String login = loginInput.getText().toString();
         String password = passwordInput.getText().toString();*/
+        //TODO REMOVE AUTOCONNECTION
+
         String login = "woivre_t";
         String password = "1lEJtLxG";
 

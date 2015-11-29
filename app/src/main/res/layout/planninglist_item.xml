@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_marginTop="5dp"
+    android:layout_marginBottom="5dp">
+
+    <TextView android:id="@+id/planningevent_title"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent" />
+
+    <TextView android:id="@+id/planningevent_start"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent" />
+
+    <TextView android:id="@+id/planningevent_end"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent" />
+
+    <TextView android:id="@+id/planningevent_room"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button android:id="@+id/planningevent_registeractivity"
+            android:layout_width="fill_parent"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Register"/>
+
+        <Button android:id="@+id/planningevent_unregisteractivity"
+            android:layout_width="fill_parent"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Unregister" />
+
+    </LinearLayout>
+
+    <Button android:id="@+id/planningevent_validatetoken"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Validate Token" />
+
+</LinearLayout>

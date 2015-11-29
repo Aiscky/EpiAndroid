@@ -23,6 +23,7 @@ public class AsyncHTTPRequest extends AsyncTask<Tuple, Integer, String> {
 
     public String urlAddress = "";
     public boolean isPOST = false;
+    public boolean isDelete = false;
 
     /* ASYNCTAKS MEDTHODS */
 
@@ -141,7 +142,13 @@ public class AsyncHTTPRequest extends AsyncTask<Tuple, Integer, String> {
             urlConnection.setRequestMethod("POST");
             urlConnection.setDoOutput(true);
         }
-        else {
+        else if (isDelete)
+        {
+            urlConnection.setRequestMethod("DELETE");
+            urlConnection.setDoOutput(true);
+        }
+        else
+        {
             urlConnection.setRequestMethod("GET");
         }
 

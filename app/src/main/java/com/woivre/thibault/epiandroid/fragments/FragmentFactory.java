@@ -15,6 +15,12 @@ public class FragmentFactory {
             case 0:
                 fragment = new WelcomeFragment();
                 break;
+            case 1:
+                fragment = new PlanningFragment();
+                break;
+            case 4:
+                fragment = new GradesFragment();
+                break;
             default:
                 fragment = new WelcomeFragment();
                 break;
