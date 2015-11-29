@@ -1,6 +1,7 @@
 package com.woivre.thibault.epiandroid.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +29,6 @@ public class ProjectFragment extends android.app.Fragment {
     String password;
     String token;
     ListView ProjectListView;
-    ArrayList<EPIProject> ProjectList;
 
     public ProjectFragment() {
     }
@@ -50,14 +50,32 @@ public class ProjectFragment extends android.app.Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_projects, container, false);
 
+        /* RETRIEVE DATA */
+
+        ArrayList<EPIProject> projectsList = new ArrayList<EPIProject>();
+
         try {
-            retrieveDayData();
+            EPIJSONObject[] rObj = RequestManager.ProjectsRequest(token);
+            if (rObj.length != 0 && rObj[0] instanceof EPIError)
+            {  }
+            else
+            {
+                projectsList = new ArrayList<EPIProject>();
+                for (EPIJSONObject event : rObj)
+                {
+                    projectsList.add((EPIProject)event);
+                    Log.d("INFO", ((EPIProject) event).toString());
+                }
+                Log.d("FIRSTSIZE", ((Integer) projectsList.size()).toString());
+            }
+        } catch (EPINetworkException e) {
+            e.printStackTrace();
         } catch (Exception e) {
-            return view;
+            e.printStackTrace();
         }
 
         ProjectListView = (ListView)view.findViewById(R.id.project_list);
-        ProjectListView.setAdapter(new ProjectAdapter(this.getActivity(), ProjectList, token));
+        ProjectListView.setAdapter(new ProjectAdapter(this.getActivity(), projectsList, token));
 
         ((CheckBox)view.findViewById(R.id.project_registeredcheckbox)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -70,29 +88,5 @@ public class ProjectFragment extends android.app.Fragment {
             }
         });
         return view;
-    }
-
-    public void retrieveDayData() throws Exception
-    {
-        try {
-            EPIJSONObject[] rObj = RequestManager.ProjectsRequest(token);
-            if (rObj.length != 0 && rObj[0] instanceof EPIError)
-            {  }
-            else
-            {
-                ArrayList<EPIProject> projectList = new ArrayList<EPIProject>();
-                for (EPIJSONObject event : rObj)
-                {
-                    projectList.add((EPIProject)event);
-                }
-                this.ProjectList = projectList;
-            }
-        } catch (EPINetworkException e) {
-            e.printStackTrace();
-            throw new Exception();
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new Exception();
-        }
     }
 }

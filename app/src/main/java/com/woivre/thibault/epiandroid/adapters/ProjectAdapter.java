@@ -20,9 +20,6 @@ import com.woivre.thibault.epiandroid.request.RequestManager;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by dylan on 29/11/2015.
- */
 public class ProjectAdapter extends BaseAdapter {
     Context mContext;
     public List<EPIProject> ProjectsList;
@@ -43,6 +40,7 @@ public class ProjectAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
+        Log.d("SIZE", ((Integer) ProjectsList.size()).toString());
         return ProjectsList.size();
     }
 
@@ -83,7 +81,7 @@ public class ProjectAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        if (ProjectsList.get(position).project != null)
+        if (ProjectsList.get(position).acti_title != null)
             holder.project.setText(ProjectsList.get(position).acti_title);
 
         if (ProjectsList.get(position).title_module != null)

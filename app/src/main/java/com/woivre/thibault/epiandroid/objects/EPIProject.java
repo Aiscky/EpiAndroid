@@ -1,5 +1,7 @@
 package com.woivre.thibault.epiandroid.objects;
 
+import com.google.gson.Gson;
+
 /**
  * Created by dylan on 29/11/2015.
  */
@@ -25,4 +27,12 @@ public class EPIProject extends EPIJSONObject {
         public Integer registered;
         public String codeinstance;
         public String type_acti;
+
+        @Override
+        public String toString() {
+                String display;
+
+                display = new Gson().toJson(this);
+                return display;
+        }
 }

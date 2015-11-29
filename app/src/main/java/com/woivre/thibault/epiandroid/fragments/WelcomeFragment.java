@@ -67,16 +67,23 @@ public class WelcomeFragment extends android.app.Fragment {
             else {
                 ImageView photoProfil = (ImageView)view.findViewById(R.id.photo_profil);
                 Drawable myDrawable = RequestManager.LoadImageFromUrl(((EPIUser)rObjUser).picture);
-                if (myDrawable != null)
-                {
-                    photoProfil.setImageDrawable(myDrawable);
-                }
+                photoProfil.setImageDrawable(myDrawable);
+
                 TextView login = (TextView)view.findViewById(R.id.login);
                 login.setText(this.login);
+
                 TextView log_act =(TextView)view.findViewById(R.id.log_act);
                 log_act.setText(((EPIUser) rObjUser).nsstat.active.toString() + "h");
+
                 TextView log_idle =(TextView)view.findViewById(R.id.log_idle);
                 log_idle.setText(((EPIUser)rObjUser).nsstat.idle.toString() + "h");
+
+                TextView gpa_value = (TextView)view.findViewById(R.id.gpa_value);
+                gpa_value.setText("GPA : " + ((EPIUser) rObjUser).gpa[0].gpa);
+
+                TextView credits_value =(TextView)view.findViewById(R.id.credits_value);
+                credits_value.setText("Credits : " + ((EPIUser) rObjUser).credits.toString());
+
             }
         } catch (EPINetworkException e) {
             Intent intent = new Intent(getActivity(), LoginActivity.class);

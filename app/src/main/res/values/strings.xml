@@ -44,5 +44,5 @@
     <string name="title_project">Projects</string>
     <string name="api_projects_url">/projects</string>
     <string name="api_projectregister_url">/project</string>
-    
+
 </resources>
