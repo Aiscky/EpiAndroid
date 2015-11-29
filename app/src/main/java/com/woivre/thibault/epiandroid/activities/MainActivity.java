@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -24,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private String token;
     private String login;
     private String password;
+    private String location = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
         b.putString(LoginActivity.LOGIN, this.login);
         b.putString(LoginActivity.PASSWORD, this.password);
         b.putString(LoginActivity.TOKEN, this.token);
+        b.putString("LOCATION", this.location);
         fragment.setArguments(b);
 
         /* REPLACE FRAGMENT */
