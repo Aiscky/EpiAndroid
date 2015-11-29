@@ -18,12 +18,12 @@
     <string name="api_eventregister_url">/event</string>
     <string name="api_validatetoken_url">/token</string>
     <string name="api_grades_url">/marks</string>
+    <string name="api_allmodules_url">/allmodules</string>
 
     <string name="checkboxregistered_hint">Only Registered activities</string>
     <string name="checkboxmodules_hint">Only Modules activities</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-
+    <string name="modulesprev_text">Previous</string>
+    <string name="modulesnext_text">Next</string>
 
 </resources>

@@ -1,5 +1,6 @@
 package com.woivre.thibault.epiandroid.request;
 
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 
 import com.google.gson.GsonBuilder;
@@ -382,4 +383,59 @@ public class RequestManager {
     }
 
 
+    public static EPIJSONObject AllModulesRequest(String token, Double scolaryear, String location, String course) throws Exception {
+        String JSONData;
+        EPIJSONObject rObj = null;
+        AsyncHTTPRequest request = new AsyncHTTPRequest();
+
+        if (!Utils.isNetworkAvailable())
+            throw new EPINetworkException();
+
+        request.isPOST = false;
+        request.urlAddress = ApplicationContextProvider.getContext().getString(R.string.epitech_api_url) + ApplicationContextProvider.getContext().getString(R.string.api_allmodules_url);
+
+        Tuple[] params = new Tuple[4];
+        params[0] = new Tuple("token", token);
+        params[1] = new Tuple("scolaryear", scolaryear.toString());
+        params[2] = new Tuple("location", location);
+        params[3] = new Tuple("course", course);
+
+        request.execute(params);
+
+        try {
+            JSONData = request.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            throw new Exception();
+        }
+
+        Log.d("JSON", JSONData);
+
+        if (isResponseError(JSONData))
+        {
+            rObj = new Gson().fromJson(JSONData, EPIError.class);
+        }
+        else
+        {
+            JSONData = "{\"preload\" : [[" + JSONData;
+            Log.d("JSON", JSONData);
+            rObj = new Gson().fromJson(JSONData, EPIAllModules.class);
+        }
+
+        return rObj;
+    }
+
+    public static Drawable LoadImageFromUrl(String url) throws Exception{
+        AsyncDrawableRequest request = new AsyncDrawableRequest();
+        Drawable myDrawable;
+
+        request.execute(url);
+        try {
+            myDrawable = request.get();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception();
+        }
+        return myDrawable;
+    }
 }
