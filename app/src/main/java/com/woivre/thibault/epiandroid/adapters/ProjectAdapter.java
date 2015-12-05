@@ -88,68 +88,68 @@ public class ProjectAdapter extends BaseAdapter {
             holder.title_module.setText(ProjectsList.get(position).title_module);
 
         if (ProjectsList.get(position).registered == 0) {
-            holder.register.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    try {
-                        EPIProject obj = ProjectsList.get(position);
-
-                        EPIError error = RequestManager.RegisterProjectRequest(token, obj.scolaryear, obj.codemodule, obj.codeinstance, obj.codeacti);
-                        if (error != null)
-                        {
-                            ((TextView)v.getRootView().findViewById(R.id.project_alert)).setText("Impossible to register to : " + obj.acti_title);
-                            ((TextView)v.getRootView().findViewById(R.id.project_alert)).setVisibility(View.VISIBLE);
-                            holder.register.setVisibility(View.GONE);
-                        }
-                        else
-                        {
-                            obj.registered = 1;
-                            ((TextView)v.getRootView().findViewById(R.id.project_alert)).setText("Registered to activity : " + obj.acti_title);
-                            ((TextView)v.getRootView().findViewById(R.id.project_alert)).setVisibility(View.VISIBLE);
-                            holder.unregister.setVisibility(View.VISIBLE);
-                            holder.register.setVisibility(View.GONE);
-                        }
-                    }
-                    catch (EPINetworkException e)
-                    {
-                        e.printStackTrace();
-                    }
-                    catch (Exception e)
-                    {
-                        e.printStackTrace();
-                    }
-                }
-            });
+//            holder.register.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    try {
+//                        EPIProject obj = ProjectsList.get(position);
+//
+//                        EPIError error = RequestManager.RegisterProjectRequest(token, obj.scolaryear, obj.codemodule, obj.codeinstance, obj.codeacti);
+//                        if (error != null)
+//                        {
+//                            ((TextView)v.getRootView().findViewById(R.id.project_alert)).setText("Impossible to register to : " + obj.acti_title);
+//                            ((TextView)v.getRootView().findViewById(R.id.project_alert)).setVisibility(View.VISIBLE);
+//                            holder.register.setVisibility(View.GONE);
+//                        }
+//                        else
+//                        {
+//                            obj.registered = 1;
+//                            ((TextView)v.getRootView().findViewById(R.id.project_alert)).setText("Registered to activity : " + obj.acti_title);
+//                            ((TextView)v.getRootView().findViewById(R.id.project_alert)).setVisibility(View.VISIBLE);
+//                            holder.unregister.setVisibility(View.VISIBLE);
+//                            holder.register.setVisibility(View.GONE);
+//                        }
+//                    }
+//                    catch (EPINetworkException e)
+//                    {
+//                        e.printStackTrace();
+//                    }
+//                    catch (Exception e)
+//                    {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            });
         }
         else {
             holder.register.setVisibility(View.GONE);
         }
 
-        holder.unregister.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    EPIProject obj = ProjectsList.get(position);
-
-                    EPIError error = RequestManager.UnregisterProjectRequest(token, obj.scolaryear, obj.codemodule, obj.codeinstance, obj.codeacti);
-                    if (error != null) {
-                        holder.unregister.setVisibility(View.GONE);
-                    }
-                    else
-                    {
-                        obj.registered = 0;
-                        ((TextView) v.getRootView().findViewById(R.id.planning_alert)).setText("Unregistered to activity : " + obj.acti_title);
-                        ((TextView) v.getRootView().findViewById(R.id.planning_alert)).setVisibility(View.VISIBLE);
-                        holder.unregister.setVisibility(View.GONE);
-                        holder.register.setVisibility(View.VISIBLE);
-                    }
-                } catch (EPINetworkException e) {
-                    e.printStackTrace();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+//        holder.unregister.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                try {
+//                    EPIProject obj = ProjectsList.get(position);
+//
+//                    EPIError error = RequestManager.UnregisterProjectRequest(token, obj.scolaryear, obj.codemodule, obj.codeinstance, obj.codeacti);
+//                    if (error != null) {
+//                        holder.unregister.setVisibility(View.GONE);
+//                    }
+//                    else
+//                    {
+//                        obj.registered = 0;
+//                        ((TextView) v.getRootView().findViewById(R.id.planning_alert)).setText("Unregistered to activity : " + obj.acti_title);
+//                        ((TextView) v.getRootView().findViewById(R.id.planning_alert)).setVisibility(View.VISIBLE);
+//                        holder.unregister.setVisibility(View.GONE);
+//                        holder.register.setVisibility(View.VISIBLE);
+//                    }
+//                } catch (EPINetworkException e) {
+//                    e.printStackTrace();
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        });
         return convertView;
     }
 

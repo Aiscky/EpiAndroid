@@ -1,5 +1,6 @@
 package com.woivre.thibault.epiandroid.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -14,12 +15,14 @@ import android.widget.TextView;
 import com.woivre.thibault.epiandroid.R;
 import com.woivre.thibault.epiandroid.objects.*;
 import com.woivre.thibault.epiandroid.request.EPINetworkException;
+import com.woivre.thibault.epiandroid.request.IUpdateViewOnPostExecute;
 import com.woivre.thibault.epiandroid.request.RequestManager;
 import com.woivre.thibault.epiandroid.utils.Utils;
 
 public class LoginActivity extends AppCompatActivity {
 
     public String Login;
+    public String Password;
     public String Token;
 
     public static final String TOKEN = "TOKEN";
@@ -30,15 +33,12 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         /* REMOVE TITLE FROM APPLICATION */
+
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_login);
-/*
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-*/
     }
 
     @Override
@@ -75,25 +75,15 @@ public class LoginActivity extends AppCompatActivity {
         EditText loginInput = (EditText)findViewById(R.id.login_input);
         EditText passwordInput = (EditText)findViewById(R.id.password_input);
 
-        String login = loginInput.getText().toString();
-        String password = passwordInput.getText().toString();
+        this.Login = "woivre_t";
+        this.Password = "1lEJtLxG";
 
-        try {
-            EPIJSONObject JObj = RequestManager.LoginRequest(login, password);
-            if (JObj instanceof EPIError)
-            {
-                loginMessages.setText(R.string.wrong_creditentials);
-                loginMessages.setVisibility(View.VISIBLE);
-            }
-            else if (JObj instanceof EPIToken)
-            {
-                Intent intent = new Intent(this, MainActivity.class);
-                intent.putExtra(TOKEN, ((EPIToken)JObj).token);
-                intent.putExtra(LOGIN, login);
-                intent.putExtra(PASSWORD, password);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-            }
+        /*String login = loginInput.getText().toString();
+        String password = passwordInput.getText().toString();*/
+
+        try
+        {
+            RequestManager.LoginRequest(this.Login, this.Password, new UpdateViewLogIn(this));
         } catch (EPINetworkException e) {
             loginMessages.setText(R.string.not_connected);
             loginMessages.setVisibility(View.VISIBLE);
@@ -101,6 +91,38 @@ public class LoginActivity extends AppCompatActivity {
             e.printStackTrace();
             loginMessages.setText(R.string.app_error);
             loginMessages.setVisibility(View.VISIBLE);
+        }
+    }
+
+    /* UpdateView OnPostExecute */
+
+    public class UpdateViewLogIn implements IUpdateViewOnPostExecute
+    {
+        private Context mContext;
+
+        public UpdateViewLogIn(Context context)
+        {
+            mContext = context;
+        }
+
+        @Override
+        public void UpdateView(EPIJSONObject[] objs) {
+            TextView loginMessages = (TextView)findViewById(R.id.login_messages);
+
+            if (objs.length != 0 && objs[0] instanceof EPIError)
+            {
+                loginMessages.setText(R.string.wrong_creditentials);
+                loginMessages.setVisibility(View.VISIBLE);
+            }
+            else if (objs[0] instanceof EPIToken)
+            {
+                Intent intent = new Intent(mContext, MainActivity.class);
+                intent.putExtra(TOKEN, ((EPIToken)objs[0]).token);
+                intent.putExtra(LOGIN, Login);
+                intent.putExtra(PASSWORD, Password);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
         }
     }
 }

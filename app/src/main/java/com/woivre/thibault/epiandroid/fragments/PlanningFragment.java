@@ -140,28 +140,28 @@ public class PlanningFragment extends android.app.Fragment {
 
     public void retrieveDayData() throws Exception
     {
-        try {
-            String currentDay;
-
-            currentDay = new SimpleDateFormat("yyyy-MM-dd").format(date);
-            EPIJSONObject[] rObj = RequestManager.PlanningRequest(token, currentDay, currentDay);
-            if (rObj.length != 0 && rObj[0] instanceof EPIError)
-            {  }
-            else
-            {
-                ArrayList<EPIEventPlanning> eventsList = new ArrayList<EPIEventPlanning>();
-                for (EPIJSONObject event : rObj)
-                {
-                    eventsList.add((EPIEventPlanning)event);
-                }
-                this.EventsList = eventsList;
-            }
-        } catch (EPINetworkException e) {
-            e.printStackTrace();
-            throw new Exception();
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new Exception();
-        }
+//        try {
+//            String currentDay;
+//
+//            currentDay = new SimpleDateFormat("yyyy-MM-dd").format(date);
+//            EPIJSONObject[] rObj = RequestManager.PlanningRequest(token, currentDay, currentDay);
+//            if (rObj.length != 0 && rObj[0] instanceof EPIError)
+//            {  }
+//            else
+//            {
+//                ArrayList<EPIEventPlanning> eventsList = new ArrayList<EPIEventPlanning>();
+//                for (EPIJSONObject event : rObj)
+//                {
+//                    eventsList.add((EPIEventPlanning)event);
+//                }
+//                this.EventsList = eventsList;
+//            }
+//        } catch (EPINetworkException e) {
+//            e.printStackTrace();
+//            throw new Exception();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            throw new Exception();
+//        }
     }
 }

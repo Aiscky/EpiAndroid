@@ -15,6 +15,7 @@ import com.woivre.thibault.epiandroid.objects.EPIError;
 import com.woivre.thibault.epiandroid.utils.Tuple;
 
 import java.lang.reflect.Array;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -29,179 +30,166 @@ import com.woivre.thibault.epiandroid.utils.Utils;
 
 public class RequestManager {
 
-    private static boolean isResponseError(String JSONData)
+    //TODO REMOVE
+
+//    public void GenericRequest(Tuple[] params,
+//                                                                   AsyncHTTPRequest.RequestType type,
+//                                                                   String URLAddress, Class<? extends EPIJSONObject> objType,
+//                                                                   IUpdateViewOnPostExecute updateObj) throws Exception
+//    {
+//        AsyncHTTPRequest request = new AsyncHTTPRequest();
+//
+//        if (!Utils.isNetworkAvailable())
+//            throw new EPINetworkException();
+//
+//        request.requestType = type;
+//        request.URLAddress = URLAddress;
+//        request.updateView = updateObj;
+//
+//        request.execute(params);
+//    }
+
+    public static EPIJSONObject[] ParseEPIJSON(String JSONData, Class<? extends EPIJSONObject> returnType, Boolean isArray)
+    {
+        EPIJSONObject[] objs = null;
+
+        if (isResponseError(JSONData))
+        {
+            objs = new EPIJSONObject[1];
+            objs[0] = new Gson().fromJson(JSONData, EPIError.class);
+        }
+        else if (isArray == true)
+        {
+            try
+            {
+                Class arrayType = Class.forName("[L" + returnType.getName() + ";");
+                objs = (EPIJSONObject[]) new Gson().fromJson(JSONData, arrayType);
+            }
+            catch (ClassNotFoundException e)
+            {
+                e.printStackTrace();
+                return null;
+            }
+        }
+        else if (isArray == false)
+        {
+            objs = new EPIJSONObject[1];
+            objs[0] = new Gson().fromJson(JSONData, returnType);
+        }
+
+        return objs;
+    }
+
+    public static boolean isResponseError(String JSONData)
     {
         JsonParser parser = new JsonParser();
 
         Log.d("ISERROR", JSONData);
 
-        try {
-            if (parser.parse(JSONData).isJsonArray()  || !parser.parse(JSONData).getAsJsonObject().has("error"))
+        try
+        {
+            if (parser.parse(JSONData).isJsonArray() || JSONData.equals("{}") || !parser.parse(JSONData).getAsJsonObject().has("error")) {
                 return false;
+            }
         } catch (JsonSyntaxException e) {
             return false;
         }
         return true;
     }
 
-    public static EPIJSONObject LoginRequest(String login, String password) throws Exception
+    public static void LoginRequest(String login, String password, IUpdateViewOnPostExecute updateView) throws Exception
     {
-        String JSONData;
-        EPIJSONObject rObj = null;
+        if (!Utils.isNetworkAvailable())
+        {
+            throw new EPINetworkException();
+        }
+
         AsyncHTTPRequest request = new AsyncHTTPRequest();
 
-        if (!Utils.isNetworkAvailable())
-            throw new EPINetworkException();
-
-        request.isPOST = true;
-        request.urlAddress = ApplicationContextProvider.getContext().getString(R.string.epitech_api_url) + ApplicationContextProvider.getContext().getString(R.string.api_login_url);;
+        request.TaskType = AsyncHTTPRequest.RequestType.POST;
+        request.URLAddress = ApplicationContextProvider.getContext().getString(R.string.epitech_api_url) + ApplicationContextProvider.getContext().getString(R.string.api_login_url);
+        request.UpdateViewParamType = EPIToken.class;
+        request.UpdateView = updateView;
+        request.IsArray = false;
 
         Tuple[] params = new Tuple[2];
         params[0] = new Tuple("login", login);
         params[1] = new Tuple("password", password);
 
         request.execute(params);
-
-        try {
-            JSONData = request.get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            throw new Exception();
-        }
-
-        if (isResponseError(JSONData)) {
-            rObj = new Gson().fromJson(JSONData, EPIError.class);
-        }
-        else {
-            rObj = new Gson().fromJson(JSONData, EPIToken.class);
-        }
-
-        return rObj;
     }
 
 
-    public static EPIJSONObject[] MessagesRequest(String token) throws Exception
+    public static void MessagesRequest(String token, IUpdateViewOnPostExecute updateView) throws Exception
     {
-        String JSONData;
-        EPIJSONObject[] rObjList = null;
-        AsyncHTTPRequest request = new AsyncHTTPRequest();
-
         if (!Utils.isNetworkAvailable())
             throw new EPINetworkException();
 
-        request.isPOST = true;
-        request.urlAddress = ApplicationContextProvider.getContext().getString(R.string.epitech_api_url) + ApplicationContextProvider.getContext().getString(R.string.api_messages_url);;
+        AsyncHTTPRequest request = new AsyncHTTPRequest();
+
+        request.TaskType = AsyncHTTPRequest.RequestType.GET;
+        request.URLAddress = ApplicationContextProvider.getContext().getString(R.string.epitech_api_url) + ApplicationContextProvider.getContext().getString(R.string.api_messages_url);
+        request.UpdateViewParamType = EPIMessage.class;
+        request.UpdateView = updateView;
+        request.IsArray = true;
 
         Tuple[] params = new Tuple[1];
         params[0] = new Tuple("token", token);
 
         request.execute(params);
-
-        try {
-            JSONData = request.get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            throw new Exception();
-        }
-
-        if (isResponseError(JSONData)) {
-            EPIError error = new Gson().fromJson(JSONData, EPIError.class);
-            rObjList = new EPIJSONObject[1];
-            rObjList[0] = error;
-        }
-        else {
-            JSONData = JSONData.substring(2);
-            JSONData = "[{" + JSONData;
-            Log.d("JSONDATA", JSONData);
-            rObjList = new Gson().fromJson(JSONData, EPIMessage[].class);
-        }
-
-        return rObjList;
     }
 
-    public static EPIJSONObject[] AlertsRequest(String token) throws Exception
+    public static void AlertsRequest(String token, IUpdateViewOnPostExecute updateView) throws Exception
     {
-        String JSONData;
-        EPIJSONObject[] rObjList = null;
-        AsyncHTTPRequest request = new AsyncHTTPRequest();
-
         if (!Utils.isNetworkAvailable())
             throw new EPINetworkException();
 
-        request.isPOST = true;
-        request.urlAddress = ApplicationContextProvider.getContext().getString(R.string.epitech_api_url) + ApplicationContextProvider.getContext().getString(R.string.api_alerts_url);
+        AsyncHTTPRequest request = new AsyncHTTPRequest();
+
+        request.TaskType = AsyncHTTPRequest.RequestType.GET;
+        request.URLAddress = ApplicationContextProvider.getContext().getString(R.string.epitech_api_url) + ApplicationContextProvider.getContext().getString(R.string.api_alerts_url);
+        request.UpdateViewParamType = EPIAlert.class;
+        request.UpdateView = updateView;
+        request.IsArray = true;
 
         Tuple[] params = new Tuple[1];
         params[0] = new Tuple("token", token);
 
         request.execute(params);
-
-        try {
-            JSONData = request.get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            throw new Exception();
-        }
-
-        if (isResponseError(JSONData)) {
-            EPIError error = new Gson().fromJson(JSONData, EPIError.class);
-            rObjList = new EPIJSONObject[1];
-            rObjList[0] = error;
-        }
-        else {
-            rObjList = new Gson().fromJson(JSONData, EPIAlert[].class);
-        }
-
-        return rObjList;
     }
 
-    public static EPIJSONObject UserRequest(String token, String login) throws Exception
+    public static void UserRequest(String token, String login, IUpdateViewOnPostExecute updateView) throws Exception
     {
-        String JSONData;
-        EPIJSONObject rObj = null;
-        AsyncHTTPRequest request = new AsyncHTTPRequest();
-
         if (!Utils.isNetworkAvailable())
             throw new EPINetworkException();
 
-        request.isPOST = false;
-        request.urlAddress = ApplicationContextProvider.getContext().getString(R.string.epitech_api_url) + ApplicationContextProvider.getContext().getString(R.string.api_user_url);
+        AsyncHTTPRequest request = new AsyncHTTPRequest();
+
+        request.TaskType = AsyncHTTPRequest.RequestType.GET;
+        request.URLAddress = ApplicationContextProvider.getContext().getString(R.string.epitech_api_url) + ApplicationContextProvider.getContext().getString(R.string.api_user_url);;
+        request.UpdateViewParamType = EPIUser.class;
+        request.UpdateView = updateView;
+        request.IsArray = false;
 
         Tuple[] params = new Tuple[2];
         params[0] = new Tuple("token", token);
         params[1] = new Tuple("user", login);
 
         request.execute(params);
-
-        try {
-            JSONData = request.get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            throw new Exception();
-        }
-
-        if (isResponseError(JSONData)) {
-            rObj = new Gson().fromJson(JSONData, EPIError.class);
-        }
-        else {
-            JSONData = "{" + JSONData;
-            rObj = new Gson().fromJson(JSONData, EPIUser.class);
-        }
-
-        return rObj;
     }
 
-    public static EPIJSONObject[] PlanningRequest(String token, String start, String end) throws Exception
+    public static void PlanningRequest(String token, String start, String end, IUpdateViewOnPostExecute updateView) throws Exception
     {
-        String JSONData;
-        EPIJSONObject[] rObjList = null;
-        AsyncHTTPRequest request = new AsyncHTTPRequest();
-
         if (!Utils.isNetworkAvailable())
             throw new EPINetworkException();
 
-        request.isPOST = false;
-        request.urlAddress = ApplicationContextProvider.getContext().getString(R.string.epitech_api_url) + ApplicationContextProvider.getContext().getString(R.string.api_planning_url);
+        AsyncHTTPRequest request = new AsyncHTTPRequest();
+
+        request.TaskType = AsyncHTTPRequest.RequestType.GET;
+        request.URLAddress = ApplicationContextProvider.getContext().getString(R.string.epitech_api_url) + ApplicationContextProvider.getContext().getString(R.string.api_planning_url);
+        request.UpdateViewParamType = EPIEventPlanning.class;
+        request.UpdateView = updateView;
+        request.IsArray = true;
 
         Tuple[] params = new Tuple[3];
         params[0] = new Tuple("token", token);
@@ -209,43 +197,27 @@ public class RequestManager {
         params[2] = new Tuple("end", end);
 
         request.execute(params);
-
-        try {
-            JSONData = request.get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            throw new Exception();
-        }
-
-        Log.d("JSON", JSONData);
-
-        if (isResponseError(JSONData)) {
-            EPIError error = new Gson().fromJson(JSONData, EPIError.class);
-            rObjList = new EPIJSONObject[1];
-            rObjList[0] = error;
-        }
-        else if (JSONData.startsWith("{") && JSONData.endsWith("}"))
-        {
-            rObjList = new EPIEventPlanning[0];
-        }
-        else
-        {
-            rObjList = new Gson().fromJson(JSONData, EPIEventPlanning[].class);
-        }
-
-        return rObjList;
     }
 
-    public static EPIError ValidateTokenRequest(String token, String scolaryear, String codemodule, String codeinstance, String codeacti, String codeevent, String tokenvalidationcode) throws Exception
+    public static void ValidateTokenRequest(String token,
+                                                String scolaryear,
+                                                String codemodule,
+                                                String codeinstance,
+                                                String codeacti, String codeevent,
+                                                String tokenvalidationcode,
+                                                IUpdateViewOnPostExecute updateView) throws Exception
     {
-        String JSONData;
-        AsyncHTTPRequest request = new AsyncHTTPRequest();
-
         if (!Utils.isNetworkAvailable())
             throw new EPINetworkException();
 
-        request.isPOST = true;
-        request.urlAddress = ApplicationContextProvider.getContext().getString(R.string.epitech_api_url) + ApplicationContextProvider.getContext().getString(R.string.api_validatetoken_url);
+        AsyncHTTPRequest request = new AsyncHTTPRequest();
+
+        request.TaskType = AsyncHTTPRequest.RequestType.POST;
+        request.URLAddress = ApplicationContextProvider.getContext().getString(R.string.epitech_api_url) + ApplicationContextProvider.getContext().getString(R.string.api_validatetoken_url);
+        request.UpdateViewParamType = EPIError.class;
+        request.UpdateView = updateView;
+        request.IsArray = false;
+
 
         Tuple[] params = new Tuple[7];
         params[0] = new Tuple("token", token);
@@ -257,34 +229,26 @@ public class RequestManager {
         params[6] = new Tuple("tokenvalidationcode", tokenvalidationcode);
 
         request.execute(params);
-
-        try {
-            JSONData = request.get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            throw new Exception();
-        }
-
-        Log.d("JSON", JSONData);
-
-        if (!JSONData.isEmpty()) {
-            EPIError error = new EPIError();
-            return error;
-        }
-
-        return null;
     }
 
-    public static EPIError RegisterEventRequest(String token, String scolaryear, String codemodule, String codeinstance, String codeacti, String codeevent) throws Exception
+    public static void RegisterEventRequest(String token,
+                                            String scolaryear,
+                                            String codemodule,
+                                            String codeinstance,
+                                            String codeacti,
+                                            String codeevent,
+                                            IUpdateViewOnPostExecute updateView) throws Exception
     {
-        String JSONData;
-        AsyncHTTPRequest request = new AsyncHTTPRequest();
-
         if (!Utils.isNetworkAvailable())
             throw new EPINetworkException();
 
-        request.isPOST = true;
-        request.urlAddress = ApplicationContextProvider.getContext().getString(R.string.epitech_api_url) + ApplicationContextProvider.getContext().getString(R.string.api_eventregister_url);
+        AsyncHTTPRequest request = new AsyncHTTPRequest();
+
+        request.TaskType = AsyncHTTPRequest.RequestType.POST;
+        request.URLAddress = ApplicationContextProvider.getContext().getString(R.string.epitech_api_url) + ApplicationContextProvider.getContext().getString(R.string.api_eventregister_url);
+        request.UpdateViewParamType = EPIError.class;
+        request.UpdateView = updateView;
+        request.IsArray = false;
 
         Tuple[] params = new Tuple[6];
         params[0] = new Tuple("token", token);
@@ -295,33 +259,26 @@ public class RequestManager {
         params[5] = new Tuple("codeevent", codeevent);
 
         request.execute(params);
-
-        try {
-            JSONData = request.get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            throw new Exception();
-        }
-
-        if (!JSONData.isEmpty()) {
-            EPIError error = new EPIError();
-            return error;
-        }
-
-        return null;
     }
 
-    public static EPIError UnregisterEventRequest(String token, String scolaryear, String codemodule, String codeinstance, String codeacti, String codeevent) throws Exception
+    public static void UnregisterEventRequest(String token,
+                                                  String scolaryear,
+                                                  String codemodule,
+                                                  String codeinstance,
+                                                  String codeacti,
+                                                  String codeevent,
+                                                  IUpdateViewOnPostExecute updateView) throws Exception
     {
-        String JSONData;
-        AsyncHTTPRequest request = new AsyncHTTPRequest();
-
         if (!Utils.isNetworkAvailable())
             throw new EPINetworkException();
 
-        request.isPOST = false;
-        request.isDelete = true;
-        request.urlAddress = ApplicationContextProvider.getContext().getString(R.string.epitech_api_url) + ApplicationContextProvider.getContext().getString(R.string.api_eventregister_url);
+        AsyncHTTPRequest request = new AsyncHTTPRequest();
+
+        request.TaskType = AsyncHTTPRequest.RequestType.DELETE;
+        request.URLAddress = ApplicationContextProvider.getContext().getString(R.string.epitech_api_url) + ApplicationContextProvider.getContext().getString(R.string.api_eventregister_url);
+        request.UpdateViewParamType = EPIError.class;
+        request.UpdateView = updateView;
+        request.IsArray = false;
 
         Tuple[] params = new Tuple[6];
         params[0] = new Tuple("token", token);
@@ -332,67 +289,44 @@ public class RequestManager {
         params[5] = new Tuple("codeevent", codeevent);
 
         request.execute(params);
-
-        try {
-            JSONData = request.get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            throw new Exception();
-        }
-
-        if (!JSONData.isEmpty()) {
-            EPIError error = new EPIError();
-            return error;
-        }
-
-        return null;
     }
 
-    public static EPIJSONObject GradesRequest(String token) throws Exception
+    public static void GradesRequest(String token, IUpdateViewOnPostExecute updateView) throws Exception
     {
-        String JSONData;
-        EPIJSONObject rObj = null;
-        AsyncHTTPRequest request = new AsyncHTTPRequest();
-
         if (!Utils.isNetworkAvailable())
             throw new EPINetworkException();
 
-        request.isPOST = false;
-        request.urlAddress = ApplicationContextProvider.getContext().getString(R.string.epitech_api_url) + ApplicationContextProvider.getContext().getString(R.string.api_grades_url);
+        AsyncHTTPRequest request = new AsyncHTTPRequest();
+
+        request.TaskType = AsyncHTTPRequest.RequestType.GET;
+        request.URLAddress = ApplicationContextProvider.getContext().getString(R.string.epitech_api_url) + ApplicationContextProvider.getContext().getString(R.string.api_grades_url);
+        request.UpdateViewParamType = EPIGrades.class;
+        request.UpdateView = updateView;
+        request.IsArray = false;
 
         Tuple[] params = new Tuple[1];
         params[0] = new Tuple("token", token);
 
         request.execute(params);
-
-        try {
-            JSONData = request.get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            throw new Exception();
-        }
-
-        if (isResponseError(JSONData)) {
-            rObj = new Gson().fromJson(JSONData, EPIError.class);
-        }
-        else {
-            rObj = new Gson().fromJson(JSONData, EPIGrades.class);
-        }
-
-        return rObj;
     }
 
 
-    public static EPIJSONObject AllModulesRequest(String token, Double scolaryear, String location, String course) throws Exception {
-        String JSONData;
-        EPIJSONObject rObj = null;
-        AsyncHTTPRequest request = new AsyncHTTPRequest();
+    public static void AllModulesRequest(String token,
+                                         Double scolaryear,
+                                         String location,
+                                         String course,
+                                         IUpdateViewOnPostExecute updateView) throws Exception {
 
         if (!Utils.isNetworkAvailable())
             throw new EPINetworkException();
 
-        request.isPOST = false;
-        request.urlAddress = ApplicationContextProvider.getContext().getString(R.string.epitech_api_url) + ApplicationContextProvider.getContext().getString(R.string.api_allmodules_url);
+        AsyncHTTPRequest request = new AsyncHTTPRequest();
+
+        request.TaskType = AsyncHTTPRequest.RequestType.GET;
+        request.URLAddress = ApplicationContextProvider.getContext().getString(R.string.epitech_api_url) + ApplicationContextProvider.getContext().getString(R.string.api_allmodules_url);
+        request.UpdateViewParamType = EPIAllModules.class;
+        request.UpdateView = updateView;
+        request.IsArray = false;
 
         Tuple[] params = new Tuple[4];
         params[0] = new Tuple("token", token);
@@ -401,55 +335,24 @@ public class RequestManager {
         params[3] = new Tuple("course", course);
 
         request.execute(params);
-
-        try {
-            JSONData = request.get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            throw new Exception();
-        }
-
-        Log.d("JSON", JSONData);
-
-        if (isResponseError(JSONData))
-        {
-            rObj = new Gson().fromJson(JSONData, EPIError.class);
-        }
-        else
-        {
-            JSONData = "{\"preload\" : [[" + JSONData;
-            Log.d("JSON", JSONData);
-            rObj = new Gson().fromJson(JSONData, EPIAllModules.class);
-        }
-
-        return rObj;
     }
 
-    public static Drawable LoadImageFromUrl(String url) throws Exception{
-        AsyncDrawableRequest request = new AsyncDrawableRequest();
-        Drawable myDrawable;
-
-        request.execute(url);
-        try {
-            myDrawable = request.get();
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new Exception();
-        }
-        return myDrawable;
-    }
-
-    public static EPIJSONObject ModuleRequest(String token, String scolaryear, String codemodule, String codeinstance) throws Exception
+    public static void ModuleRequest(String token,
+                                     String scolaryear,
+                                     String codemodule,
+                                     String codeinstance,
+                                     IUpdateViewOnPostExecute updateView) throws Exception
     {
-        String JSONData;
-        EPIJSONObject rObj = null;
-        AsyncHTTPRequest request = new AsyncHTTPRequest();
-
         if (!Utils.isNetworkAvailable())
             throw new EPINetworkException();
 
-        request.isPOST = false;
-        request.urlAddress = ApplicationContextProvider.getContext().getString(R.string.epitech_api_url) + ApplicationContextProvider.getContext().getString(R.string.api_module_url);
+        AsyncHTTPRequest request = new AsyncHTTPRequest();
+
+        request.TaskType = AsyncHTTPRequest.RequestType.GET;
+        request.URLAddress = ApplicationContextProvider.getContext().getString(R.string.epitech_api_url) + ApplicationContextProvider.getContext().getString(R.string.api_module_url);
+        request.UpdateViewParamType = EPIModule.class;
+        request.UpdateView = updateView;
+        request.IsArray = false;
 
         Tuple[] params = new Tuple[4];
         params[0] = new Tuple("token", token);
@@ -458,38 +361,25 @@ public class RequestManager {
         params[3] = new Tuple("codeinstance", codeinstance);
 
         request.execute(params);
-
-        try
-        {
-            JSONData = request.get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            throw new Exception();
-        }
-
-        if (isResponseError(JSONData)) {
-            rObj = new Gson().fromJson(JSONData, EPIError.class);
-        }
-        else
-        {
-            JSONData = "{" + JSONData;
-            Log.d("JSONData", JSONData);
-            rObj = new Gson().fromJson(JSONData, EPIModule.class);
-        }
-
-        return rObj;
     }
 
-    public static EPIError RegisterModuleRequest(String token, String scolaryear, String codemodule, String codeinstance) throws Exception
+    public static void RegisterModuleRequest(String token,
+                                             String scolaryear,
+                                             String codemodule,
+                                             String codeinstance,
+                                             IUpdateViewOnPostExecute updateView) throws Exception
     {
-        String JSONData;
-        AsyncHTTPRequest request = new AsyncHTTPRequest();
-
         if (!Utils.isNetworkAvailable())
             throw new EPINetworkException();
 
-        request.isPOST = true;
-        request.urlAddress = ApplicationContextProvider.getContext().getString(R.string.epitech_api_url) + ApplicationContextProvider.getContext().getString(R.string.api_module_url);
+        AsyncHTTPRequest request = new AsyncHTTPRequest();
+
+        request.TaskType = AsyncHTTPRequest.RequestType.POST;
+        request.URLAddress = ApplicationContextProvider.getContext().getString(R.string.epitech_api_url) + ApplicationContextProvider.getContext().getString(R.string.api_module_url);
+        request.UpdateViewParamType = EPIError.class;
+        request.UpdateView = updateView;
+        request.IsArray = false;
+
 
         Tuple[] params = new Tuple[4];
         params[0] = new Tuple("token", token);
@@ -498,33 +388,24 @@ public class RequestManager {
         params[3] = new Tuple("codeinstance", codeinstance);
 
         request.execute(params);
-
-        try {
-            JSONData = request.get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            throw new Exception();
-        }
-
-        if (!JSONData.isEmpty()) {
-            EPIError error = new EPIError();
-            return error;
-        }
-
-        return null;
     }
 
-    public static EPIError UnregisterModuleRequest(String token, String scolaryear, String codemodule, String codeinstance) throws Exception
+    public static void UnregisterModuleRequest(String token,
+                                               String scolaryear,
+                                               String codemodule,
+                                               String codeinstance,
+                                               IUpdateViewOnPostExecute updateView) throws Exception
     {
-        String JSONData;
-        AsyncHTTPRequest request = new AsyncHTTPRequest();
-
         if (!Utils.isNetworkAvailable())
             throw new EPINetworkException();
 
-        request.isPOST = false;
-        request.isDelete = true;
-        request.urlAddress = ApplicationContextProvider.getContext().getString(R.string.epitech_api_url) + ApplicationContextProvider.getContext().getString(R.string.api_module_url);
+        AsyncHTTPRequest request = new AsyncHTTPRequest();
+
+        request.TaskType = AsyncHTTPRequest.RequestType.DELETE;
+        request.URLAddress = ApplicationContextProvider.getContext().getString(R.string.epitech_api_url) + ApplicationContextProvider.getContext().getString(R.string.api_module_url);
+        request.UpdateViewParamType = EPIError.class;
+        request.UpdateView = updateView;
+        request.IsArray = false;
 
         Tuple[] params = new Tuple[4];
         params[0] = new Tuple("token", token);
@@ -533,33 +414,25 @@ public class RequestManager {
         params[3] = new Tuple("codeinstance", codeinstance);
 
         request.execute(params);
-
-        try {
-            JSONData = request.get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            throw new Exception();
-        }
-
-        if (!JSONData.isEmpty()) {
-            EPIError error = new EPIError();
-            return error;
-        }
-
-        return null;
     }
 
-    public static EPIError UnregisterProjectRequest(String token, String scolaryear, String codemodule, String codeinstance, String codeacti) throws Exception
+    public static void UnregisterProjectRequest(String token,
+                                                String scolaryear,
+                                                String codemodule,
+                                                String codeinstance,
+                                                String codeacti,
+                                                IUpdateViewOnPostExecute updateView) throws Exception
     {
-        String JSONData;
         AsyncHTTPRequest request = new AsyncHTTPRequest();
 
         if (!Utils.isNetworkAvailable())
             throw new EPINetworkException();
 
-        request.isPOST = false;
-        request.isDelete = true;
-        request.urlAddress = ApplicationContextProvider.getContext().getString(R.string.epitech_api_url) + ApplicationContextProvider.getContext().getString(R.string.api_projectregister_url);
+        request.TaskType = AsyncHTTPRequest.RequestType.DELETE;
+        request.URLAddress = ApplicationContextProvider.getContext().getString(R.string.epitech_api_url) + ApplicationContextProvider.getContext().getString(R.string.api_projectregister_url);
+        request.UpdateViewParamType = EPIError.class;
+        request.UpdateView = updateView;
+        request.IsArray = false;
 
         Tuple[] params = new Tuple[5];
         params[0] = new Tuple("token", token);
@@ -569,32 +442,25 @@ public class RequestManager {
         params[4] = new Tuple("codeacti", codeacti);
 
         request.execute(params);
-
-        try {
-            JSONData = request.get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            throw new Exception();
-        }
-
-        if (!JSONData.isEmpty()) {
-            EPIError error = new EPIError();
-            return error;
-        }
-
-        return null;
     }
 
-    public static EPIError RegisterProjectRequest(String token, String scolaryear, String codemodule, String codeinstance, String codeacti) throws Exception
+    public static void RegisterProjectRequest(String token,
+                                              String scolaryear,
+                                              String codemodule,
+                                              String codeinstance,
+                                              String codeacti,
+                                              IUpdateViewOnPostExecute updateView) throws Exception
     {
-        String JSONData;
-        AsyncHTTPRequest request = new AsyncHTTPRequest();
-
         if (!Utils.isNetworkAvailable())
             throw new EPINetworkException();
 
-        request.isPOST = true;
-        request.urlAddress = ApplicationContextProvider.getContext().getString(R.string.epitech_api_url) + ApplicationContextProvider.getContext().getString(R.string.api_projectregister_url);
+        AsyncHTTPRequest request = new AsyncHTTPRequest();
+
+        request.TaskType = AsyncHTTPRequest.RequestType.POST;
+        request.URLAddress = ApplicationContextProvider.getContext().getString(R.string.epitech_api_url) + ApplicationContextProvider.getContext().getString(R.string.api_projectregister_url);
+        request.UpdateViewParamType = EPIError.class;
+        request.UpdateView = updateView;
+        request.IsArray = false;
 
         Tuple[] params = new Tuple[5];
         params[0] = new Tuple("token", token);
@@ -604,62 +470,35 @@ public class RequestManager {
         params[4] = new Tuple("codeacti", codeacti);
 
         request.execute(params);
-
-        try {
-            JSONData = request.get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            throw new Exception();
-        }
-
-        if (!JSONData.isEmpty()) {
-            EPIError error = new EPIError();
-            return error;
-        }
-
-        return null;
     }
 
-    public static EPIJSONObject[] ProjectsRequest(String token) throws Exception
+    public static void ProjectsRequest(String token, IUpdateViewOnPostExecute updateView) throws Exception
     {
-        String JSONData;
-        EPIJSONObject[] rObjList = null;
-        AsyncHTTPRequest request = new AsyncHTTPRequest();
-
         if (!Utils.isNetworkAvailable())
             throw new EPINetworkException();
 
-        request.isPOST = false;
-        request.urlAddress = ApplicationContextProvider.getContext().getString(R.string.epitech_api_url) + ApplicationContextProvider.getContext().getString(R.string.api_projects_url);
+        AsyncHTTPRequest request = new AsyncHTTPRequest();
+
+        request.TaskType = AsyncHTTPRequest.RequestType.GET;
+        request.URLAddress = ApplicationContextProvider.getContext().getString(R.string.epitech_api_url) + ApplicationContextProvider.getContext().getString(R.string.api_projects_url);
+        request.UpdateViewParamType = EPIProject.class;
+        request.UpdateView = updateView;
+        request.IsArray = true;
 
         Tuple[] params = new Tuple[1];
         params[0] = new Tuple("token", token);
 
         request.execute(params);
+    }
 
-        try {
-            JSONData = request.get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            throw new Exception();
-        }
+    public static void LoadImageFromUrl(String url, ILoadImageOnPostExecute loadImage) throws Exception{
+        if (!Utils.isNetworkAvailable())
+            throw new EPINetworkException();
 
-        Log.d("JSON", JSONData);
+        AsyncDrawableRequest request = new AsyncDrawableRequest();
 
-        if (isResponseError(JSONData)) {
-            EPIError error = new Gson().fromJson(JSONData, EPIError.class);
-            rObjList = new EPIJSONObject[1];
-            rObjList[0] = error;
-        }
-        else if (JSONData.startsWith("{") && JSONData.endsWith("}"))
-        {
-            rObjList = new EPIProject[0];
-        }
-        else
-        {
-            rObjList = new Gson().fromJson(JSONData, EPIProject[].class);
-        }
+        request.UpdateView = loadImage;
 
-        return rObjList;
+        request.execute(url);
     }
 }

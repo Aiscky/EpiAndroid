@@ -54,25 +54,25 @@ public class ProjectFragment extends android.app.Fragment {
 
         ArrayList<EPIProject> projectsList = new ArrayList<EPIProject>();
 
-        try {
-            EPIJSONObject[] rObj = RequestManager.ProjectsRequest(token);
-            if (rObj.length != 0 && rObj[0] instanceof EPIError)
-            {  }
-            else
-            {
-                projectsList = new ArrayList<EPIProject>();
-                for (EPIJSONObject event : rObj)
-                {
-                    projectsList.add((EPIProject)event);
-                    Log.d("INFO", ((EPIProject) event).toString());
-                }
-                Log.d("FIRSTSIZE", ((Integer) projectsList.size()).toString());
-            }
-        } catch (EPINetworkException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        try {
+//            EPIJSONObject[] rObj = RequestManager.ProjectsRequest(token);
+//            if (rObj.length != 0 && rObj[0] instanceof EPIError)
+//            {  }
+//            else
+//            {
+//                projectsList = new ArrayList<EPIProject>();
+//                for (EPIJSONObject event : rObj)
+//                {
+//                    projectsList.add((EPIProject)event);
+//                    Log.d("INFO", ((EPIProject) event).toString());
+//                }
+//                Log.d("FIRSTSIZE", ((Integer) projectsList.size()).toString());
+//            }
+//        } catch (EPINetworkException e) {
+//            e.printStackTrace();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
         ProjectListView = (ListView)view.findViewById(R.id.project_list);
         ProjectListView.setAdapter(new ProjectAdapter(this.getActivity(), projectsList, token));

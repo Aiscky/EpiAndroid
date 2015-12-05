@@ -3,29 +3,47 @@ package com.woivre.thibault.epiandroid.request;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.woivre.thibault.epiandroid.R;
+import com.woivre.thibault.epiandroid.objects.EPIJSONObject;
 import com.woivre.thibault.epiandroid.utils.Tuple;
 import com.woivre.thibault.epiandroid.utils.Utils;
-import com.woivre.thibault.epiandroid.context.ApplicationContextProvider;
 
-import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 public class AsyncHTTPRequest extends AsyncTask<Tuple, Integer, String> {
 
-    public String urlAddress = "";
-    public boolean isPOST = false;
-    public boolean isDelete = false;
+    public String URLAddress = "";
+    public RequestType TaskType;
+    public IUpdateViewOnPostExecute UpdateView = null;
+    public Class UpdateViewParamType;
+    public Boolean IsArray;
+
+    public enum RequestType
+    {
+        POST,
+        GET,
+        DELETE
+    }
 
     /* ASYNCTAKS MEDTHODS */
+
+    @Override
+    protected void onPostExecute(String s) {
+
+
+        EPIJSONObject[] objs = null;
+
+        objs = RequestManager.ParseEPIJSON(s, UpdateViewParamType, IsArray);
+
+        if (UpdateView != null)
+        {
+            UpdateView.UpdateView(objs);
+        }
+    }
 
     @Override
     protected String doInBackground(Tuple ... params) {
@@ -47,8 +65,8 @@ public class AsyncHTTPRequest extends AsyncTask<Tuple, Integer, String> {
             separator = "&";
         }
 
-        if (isPOST == false) {
-            urlAddress += "?" + urlParameters.toString();
+        if (TaskType == RequestType.GET || TaskType == RequestType.DELETE) {
+            URLAddress += "?" + urlParameters.toString();
         }
 
         /* CREATING URL CONNECTION OBJ */
@@ -60,16 +78,17 @@ public class AsyncHTTPRequest extends AsyncTask<Tuple, Integer, String> {
             return "";
         }
 
-        try {
-            if (isPOST) {
+        if (TaskType == RequestType.POST)
+        {
+            try {
                 SettingPostParameters(urlConnection, urlParameters.toString());
+            } catch (IOException e) {
+                e.printStackTrace();
+                return "";
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "";
         }
 
-        Log.d("URL", urlAddress);
+        Log.d("URL", URLAddress);
         Log.d("URLPARAMETER", urlParameters.toString());
 
         /* GETTING RESPONSE */
@@ -122,14 +141,7 @@ public class AsyncHTTPRequest extends AsyncTask<Tuple, Integer, String> {
         HttpURLConnection urlConnection;
 
         try {
-            url = new URL(urlAddress);
-        }
-        catch (MalformedURLException e) {
-            e.printStackTrace();
-            throw new IOException();
-        }
-
-        try {
+            url = new URL(URLAddress);
             urlConnection = (HttpURLConnection) url.openConnection();
         } catch (IOException e) {
             e.printStackTrace();
@@ -138,18 +150,19 @@ public class AsyncHTTPRequest extends AsyncTask<Tuple, Integer, String> {
 
         /* SETTING THE REQUEST METHOD */
 
-        if (isPOST) {
-            urlConnection.setRequestMethod("POST");
-            urlConnection.setDoOutput(true);
-        }
-        else if (isDelete)
+        switch (TaskType)
         {
-            urlConnection.setRequestMethod("DELETE");
-            urlConnection.setDoOutput(true);
-        }
-        else
-        {
-            urlConnection.setRequestMethod("GET");
+            case POST:
+                urlConnection.setRequestMethod("POST");
+                urlConnection.setDoOutput(true);
+                break;
+            case DELETE:
+                urlConnection.setRequestMethod("DELETE");
+                urlConnection.setDoOutput(true);
+                break;
+            case GET:
+                urlConnection.setRequestMethod("GET");
+                break;
         }
 
         /* SETTING URLCONNECTION PARAMETERS */

@@ -112,40 +112,40 @@ public class PlanningAdapter extends BaseAdapter {
                 EPIEventsList.get(position).event_registered != null &&
                 !EPIEventsList.get(position).event_registered)
         {
-            holder.registeractivity.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    try
-                    {
-                        EPIEventPlanning obj = EPIEventsList.get(position);
-
-                        EPIError error = RequestManager.RegisterEventRequest(token, obj.scolaryear, obj.codemodule, obj.codeinstance, obj.codeacti, obj.codeevent);
-                        if (error != null)
-                        {
-                            ((TextView)v.getRootView().findViewById(R.id.planning_alert)).setText("Impossible to register to : " + obj.acti_title);
-                            ((TextView)v.getRootView().findViewById(R.id.planning_alert)).setVisibility(View.VISIBLE);
-                            holder.registeractivity.setVisibility(View.GONE);
-                        }
-                        else
-                        {
-                            obj.allow_register = false;
-                            obj.event_registered = true;
-                            ((TextView)v.getRootView().findViewById(R.id.planning_alert)).setText("Registered to activity : " + obj.acti_title);
-                            ((TextView)v.getRootView().findViewById(R.id.planning_alert)).setVisibility(View.VISIBLE);
-                            holder.unregisteractivity.setVisibility(View.VISIBLE);
-                            holder.registeractivity.setVisibility(View.GONE);
-                        }
-                    }
-                    catch (EPINetworkException e)
-                    {
-                        e.printStackTrace();
-                    }
-                    catch (Exception e)
-                    {
-                        e.printStackTrace();
-                    }
-                }
-            });
+//            holder.registeractivity.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    try
+//                    {
+//                        EPIEventPlanning obj = EPIEventsList.get(position);
+//
+//                        EPIError error = RequestManager.RegisterEventRequest(token, obj.scolaryear, obj.codemodule, obj.codeinstance, obj.codeacti, obj.codeevent);
+//                        if (error != null)
+//                        {
+//                            ((TextView)v.getRootView().findViewById(R.id.planning_alert)).setText("Impossible to register to : " + obj.acti_title);
+//                            ((TextView)v.getRootView().findViewById(R.id.planning_alert)).setVisibility(View.VISIBLE);
+//                            holder.registeractivity.setVisibility(View.GONE);
+//                        }
+//                        else
+//                        {
+//                            obj.allow_register = false;
+//                            obj.event_registered = true;
+//                            ((TextView)v.getRootView().findViewById(R.id.planning_alert)).setText("Registered to activity : " + obj.acti_title);
+//                            ((TextView)v.getRootView().findViewById(R.id.planning_alert)).setVisibility(View.VISIBLE);
+//                            holder.unregisteractivity.setVisibility(View.VISIBLE);
+//                            holder.registeractivity.setVisibility(View.GONE);
+//                        }
+//                    }
+//                    catch (EPINetworkException e)
+//                    {
+//                        e.printStackTrace();
+//                    }
+//                    catch (Exception e)
+//                    {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            });
         }
         else
         {
@@ -154,42 +154,42 @@ public class PlanningAdapter extends BaseAdapter {
 
         if (EPIEventsList.get(position).allow_token != null && EPIEventsList.get(position).allow_token == true)
         {
-            holder.validatetoken.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    try
-                    {
-                        EPIEventPlanning obj = EPIEventsList.get(position);
-                        String tokenNumber = "00000000";
-
-                        tokenNumber = ((EditText)v.getRootView().findViewById(R.id.planningevent_token)).getText().toString();
-                        Log.d("TOKENNUMBER", tokenNumber);
-
-                        EPIError error = RequestManager.ValidateTokenRequest(token, obj.scolaryear, obj.codemodule, obj.codeinstance, obj.codeacti, obj.codeevent, tokenNumber);
-                        if (error != null)
-                        {
-                            ((TextView)v.getRootView().findViewById(R.id.planning_alert)).setText("Enable to Validate token for : " + obj.acti_title);
-                            ((TextView)v.getRootView().findViewById(R.id.planning_alert)).setVisibility(View.VISIBLE);
-                            holder.validatetoken.setVisibility(View.GONE);
-                        }
-                        else
-                        {
-                            obj.allow_token = false;
-                            ((TextView)v.getRootView().findViewById(R.id.planning_alert)).setText("Validated token for : " + obj.acti_title);
-                            ((TextView)v.getRootView().findViewById(R.id.planning_alert)).setVisibility(View.VISIBLE);
-                            holder.validatetoken.setVisibility(View.GONE);
-                        }
-                    }
-                    catch (EPINetworkException e)
-                    {
-                        e.printStackTrace();
-                    }
-                    catch (Exception e)
-                    {
-                        e.printStackTrace();
-                    }
-                }
-            });
+//            holder.validatetoken.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    try
+//                    {
+//                        EPIEventPlanning obj = EPIEventsList.get(position);
+//                        String tokenNumber = "00000000";
+//
+//                        tokenNumber = ((EditText)v.getRootView().findViewById(R.id.planningevent_token)).getText().toString();
+//                        Log.d("TOKENNUMBER", tokenNumber);
+//
+//                        EPIError error = RequestManager.ValidateTokenRequest(token, obj.scolaryear, obj.codemodule, obj.codeinstance, obj.codeacti, obj.codeevent, tokenNumber);
+//                        if (error != null)
+//                        {
+//                            ((TextView)v.getRootView().findViewById(R.id.planning_alert)).setText("Enable to Validate token for : " + obj.acti_title);
+//                            ((TextView)v.getRootView().findViewById(R.id.planning_alert)).setVisibility(View.VISIBLE);
+//                            holder.validatetoken.setVisibility(View.GONE);
+//                        }
+//                        else
+//                        {
+//                            obj.allow_token = false;
+//                            ((TextView)v.getRootView().findViewById(R.id.planning_alert)).setText("Validated token for : " + obj.acti_title);
+//                            ((TextView)v.getRootView().findViewById(R.id.planning_alert)).setVisibility(View.VISIBLE);
+//                            holder.validatetoken.setVisibility(View.GONE);
+//                        }
+//                    }
+//                    catch (EPINetworkException e)
+//                    {
+//                        e.printStackTrace();
+//                    }
+//                    catch (Exception e)
+//                    {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            });
         }
         else
         {
@@ -198,32 +198,32 @@ public class PlanningAdapter extends BaseAdapter {
         }
 
 
-        holder.unregisteractivity.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    EPIEventPlanning obj = EPIEventsList.get(position);
-
-                    EPIError error = RequestManager.UnregisterEventRequest(token, obj.scolaryear, obj.codemodule, obj.codeinstance, obj.codeacti, obj.codeevent);
-                    if (error != null) {
-                        holder.unregisteractivity.setVisibility(View.GONE);
-                    }
-                    else
-                    {
-                        obj.allow_register = true;
-                        obj.event_registered = false;
-                        ((TextView) v.getRootView().findViewById(R.id.planning_alert)).setText("Unregistered to activity : " + obj.acti_title);
-                        ((TextView) v.getRootView().findViewById(R.id.planning_alert)).setVisibility(View.VISIBLE);
-                        holder.unregisteractivity.setVisibility(View.GONE);
-                        holder.registeractivity.setVisibility(View.VISIBLE);
-                    }
-                } catch (EPINetworkException e) {
-                    e.printStackTrace();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+//        holder.unregisteractivity.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                try {
+//                    EPIEventPlanning obj = EPIEventsList.get(position);
+//
+//                    EPIError error = RequestManager.UnregisterEventRequest(token, obj.scolaryear, obj.codemodule, obj.codeinstance, obj.codeacti, obj.codeevent);
+//                    if (error != null) {
+//                        holder.unregisteractivity.setVisibility(View.GONE);
+//                    }
+//                    else
+//                    {
+//                        obj.allow_register = true;
+//                        obj.event_registered = false;
+//                        ((TextView) v.getRootView().findViewById(R.id.planning_alert)).setText("Unregistered to activity : " + obj.acti_title);
+//                        ((TextView) v.getRootView().findViewById(R.id.planning_alert)).setVisibility(View.VISIBLE);
+//                        holder.unregisteractivity.setVisibility(View.GONE);
+//                        holder.registeractivity.setVisibility(View.VISIBLE);
+//                    }
+//                } catch (EPINetworkException e) {
+//                    e.printStackTrace();
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        });
 
         return convertView;
     }

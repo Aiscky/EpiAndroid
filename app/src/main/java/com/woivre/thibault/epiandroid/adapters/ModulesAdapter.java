@@ -143,96 +143,96 @@ public class ModulesAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 Log.d("INFO", "Pressed expand");
-                try {
-                    EPIJSONObject obj = RequestManager.ModuleRequest(token, ((Integer) module.scolaryear.intValue()).toString(), module.code, module.codeinstance);
-                    if (obj instanceof EPIError)
-                    {
-                        if (module.title != null)
-                        {
-                            ((TextView) v.getRootView().findViewById(R.id.modules_msg)).setText("Couldn't get " + module.title + " informations");
-                        }
-                    }
-                    else
-                    {
-                        if (((EPIModule) obj).description != null)
-                        {
-                            ((TextView) v.getRootView().findViewById(R.id.module_description)).setText(((EPIModule) obj).description);
-                        }
-                        if (((EPIModule) obj).competence != null)
-                        {
-                            ((TextView) v.getRootView().findViewById(R.id.module_competence)).setText(((EPIModule) obj).competence);
-                        }
-                        if (((EPIModule) obj).student_grade != null && !((EPIModule) obj).student_grade.isEmpty())
-                        {
-                            ((TextView) v.getRootView().findViewById(R.id.module_grade)).setText(((EPIModule) obj).student_grade);
-                        }
-                        else
-                        {
-                            ((TextView) v.getRootView().findViewById(R.id.module_description)).setText("NONE");
-                        }
-
-                        v.getRootView().findViewById(R.id.modules_infoslayout).setVisibility(View.VISIBLE);
-                        ((TextView) v.getRootView().findViewById(R.id.modules_msg)).setVisibility(View.GONE);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+//                try {
+//                    EPIJSONObject obj = RequestManager.ModuleRequest(token, ((Integer) module.scolaryear.intValue()).toString(), module.code, module.codeinstance);
+//                    if (obj instanceof EPIError)
+//                    {
+//                        if (module.title != null)
+//                        {
+//                            ((TextView) v.getRootView().findViewById(R.id.modules_msg)).setText("Couldn't get " + module.title + " informations");
+//                        }
+//                    }
+//                    else
+//                    {
+//                        if (((EPIModule) obj).description != null)
+//                        {
+//                            ((TextView) v.getRootView().findViewById(R.id.module_description)).setText(((EPIModule) obj).description);
+//                        }
+//                        if (((EPIModule) obj).competence != null)
+//                        {
+//                            ((TextView) v.getRootView().findViewById(R.id.module_competence)).setText(((EPIModule) obj).competence);
+//                        }
+//                        if (((EPIModule) obj).student_grade != null && !((EPIModule) obj).student_grade.isEmpty())
+//                        {
+//                            ((TextView) v.getRootView().findViewById(R.id.module_grade)).setText(((EPIModule) obj).student_grade);
+//                        }
+//                        else
+//                        {
+//                            ((TextView) v.getRootView().findViewById(R.id.module_description)).setText("NONE");
+//                        }
+//
+//                        v.getRootView().findViewById(R.id.modules_infoslayout).setVisibility(View.VISIBLE);
+//                        ((TextView) v.getRootView().findViewById(R.id.modules_msg)).setVisibility(View.GONE);
+//                    }
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
             }
         });
 
-        holder.register.setOnClickListener(new View.OnClickListener() {
+//        holder.register.setOnClickListener(new View.OnClickListener() {
+//
+//            @Override
+//            public void onClick(View v) {
+//                EPIAllModules.Item module = ModulesList.get(position);
+//                try {
+//                    EPIError error = RequestManager.RegisterModuleRequest(token, ((Integer) module.scolaryear.intValue()).toString(), module.code, module.codeinstance);
+//                    if (error != null) {
+//                        ((TextView) v.getRootView().findViewById(R.id.modules_msg)).setText("Can't register to module : " + module.title);
+//                    } else {
+//                        ((TextView) v.getRootView().findViewById(R.id.modules_msg)).setText("Registered successfully to : " + module.title);
+//                        holder.unregister.setVisibility(View.VISIBLE);
+//                    }
+//                    ((TextView) v.getRootView().findViewById(R.id.modules_msg)).setVisibility(View.VISIBLE);
+//                    holder.register.setVisibility(View.GONE);
+//                    module.status = "ongoing";
+//                } catch (EPINetworkException e) {
+//                    e.printStackTrace();
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        });
 
-            @Override
-            public void onClick(View v) {
-                EPIAllModules.Item module = ModulesList.get(position);
-                try {
-                    EPIError error = RequestManager.RegisterModuleRequest(token, ((Integer) module.scolaryear.intValue()).toString(), module.code, module.codeinstance);
-                    if (error != null) {
-                        ((TextView) v.getRootView().findViewById(R.id.modules_msg)).setText("Can't register to module : " + module.title);
-                    } else {
-                        ((TextView) v.getRootView().findViewById(R.id.modules_msg)).setText("Registered successfully to : " + module.title);
-                        holder.unregister.setVisibility(View.VISIBLE);
-                    }
-                    ((TextView) v.getRootView().findViewById(R.id.modules_msg)).setVisibility(View.VISIBLE);
-                    holder.register.setVisibility(View.GONE);
-                    module.status = "ongoing";
-                } catch (EPINetworkException e) {
-                    e.printStackTrace();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
 
-
-        holder.unregister.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    EPIAllModules.Item module = ModulesList.get(position);
-                    EPIError error = RequestManager.UnregisterModuleRequest(token, ((Integer) module.scolaryear.intValue()).toString(), module.code, module.codeinstance);
-                    if (error != null)
-                    {
-                        ((TextView) v.getRootView().findViewById(R.id.modules_msg)).setText("Can't unregister from module : " + module.title);
-                    }
-                    else
-                    {
-                        ((TextView) v.getRootView().findViewById(R.id.modules_msg)).setText("Unregistered successfully from : " + module.title);
-                        holder.register.setVisibility(View.VISIBLE);
-                    }
-                    ((TextView) v.getRootView().findViewById(R.id.modules_msg)).setVisibility(View.VISIBLE);
-                    holder.unregister.setVisibility(View.GONE);
-                    module.status = "notregistered";
-                    Log.d("BONJOUR", module.toString());
-                }
-                catch (EPINetworkException e)
-                {
-                    e.printStackTrace();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+//        holder.unregister.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                try {
+//                    EPIAllModules.Item module = ModulesList.get(position);
+//                    EPIError error = RequestManager.UnregisterModuleRequest(token, ((Integer) module.scolaryear.intValue()).toString(), module.code, module.codeinstance);
+//                    if (error != null)
+//                    {
+//                        ((TextView) v.getRootView().findViewById(R.id.modules_msg)).setText("Can't unregister from module : " + module.title);
+//                    }
+//                    else
+//                    {
+//                        ((TextView) v.getRootView().findViewById(R.id.modules_msg)).setText("Unregistered successfully from : " + module.title);
+//                        holder.register.setVisibility(View.VISIBLE);
+//                    }
+//                    ((TextView) v.getRootView().findViewById(R.id.modules_msg)).setVisibility(View.VISIBLE);
+//                    holder.unregister.setVisibility(View.GONE);
+//                    module.status = "notregistered";
+//                    Log.d("BONJOUR", module.toString());
+//                }
+//                catch (EPINetworkException e)
+//                {
+//                    e.printStackTrace();
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        });
 
         return convertView;
     }

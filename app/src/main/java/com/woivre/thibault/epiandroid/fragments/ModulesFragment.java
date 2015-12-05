@@ -62,20 +62,20 @@ public class ModulesFragment extends android.app.Fragment {
 
         /* GETTING USER INFOS */
 
-        try {
-            EPIJSONObject rObj = RequestManager.UserRequest(this.token, this.login);
-            if (rObj instanceof EPIError) {
-            }
-            else
-            {
-                location = ((EPIUser) rObj).location;
-                course_code = ((EPIUser) rObj).course_code;
-            }
-        } catch (EPINetworkException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        try {
+//            EPIJSONObject rObj = RequestManager.UserRequest(this.token, this.login);
+//            if (rObj instanceof EPIError) {
+//            }
+//            else
+//            {
+//                location = ((EPIUser) rObj).location;
+//                course_code = ((EPIUser) rObj).course_code;
+//            }
+//        } catch (EPINetworkException e) {
+//            e.printStackTrace();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
 
         /* GETTING ALL MODULES INFOS */
@@ -83,27 +83,27 @@ public class ModulesFragment extends android.app.Fragment {
         ArrayList<EPIAllModules.Item> modulesData = new ArrayList<EPIAllModules.Item>();
         ArrayList<String> semesters = new ArrayList<String>();
 
-        try {
-            EPIJSONObject rObj = RequestManager.AllModulesRequest(token, 1999.0, location, course_code);
-            if (rObj instanceof EPIError) {
-
-            }
-            else
-            {
-                for (EPIAllModules.Item item : ((EPIAllModules) rObj).items)
-                {
-                    modulesData.add(item);
-                    if (!semesters.contains(((Integer) item.semester.intValue()).toString()))
-                    {
-                        semesters.add(((Integer) item.semester.intValue()).toString());
-                    }
-                }
-            }
-        } catch (EPINetworkException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        try {
+//            EPIJSONObject rObj = RequestManager.AllModulesRequest(token, 1999.0, location, course_code);
+//            if (rObj instanceof EPIError) {
+//
+//            }
+//            else
+//            {
+//                for (EPIAllModules.Item item : ((EPIAllModules) rObj).items)
+//                {
+//                    modulesData.add(item);
+//                    if (!semesters.contains(((Integer) item.semester.intValue()).toString()))
+//                    {
+//                        semesters.add(((Integer) item.semester.intValue()).toString());
+//                    }
+//                }
+//            }
+//        } catch (EPINetworkException e) {
+//            e.printStackTrace();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
         /* DYNAMICALLY FILL VIEW */
 

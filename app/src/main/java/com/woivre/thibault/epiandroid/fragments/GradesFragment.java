@@ -61,35 +61,35 @@ public class GradesFragment extends android.app.Fragment {
         ArrayList<EPIGrades.Grade> gradesList = new ArrayList<EPIGrades.Grade>();
         ArrayList<String> scolaryears = new ArrayList<String>();
 
-        try
-        {
-            EPIJSONObject objs = RequestManager.GradesRequest(this.token);
-            if (objs != null && objs instanceof EPIError)
-            {
-                //Handle Error EPIError
-            }
-            else if (objs instanceof EPIGrades)
-            {
-                for (EPIGrades.Grade grade : ((EPIGrades) objs).notes)
-                {
-                    gradesList.add(grade);
-                    if (!scolaryears.contains(((Integer) grade.scolaryear.intValue()).toString()))
-                    {
-                        scolaryears.add(((Integer) grade.scolaryear.intValue()).toString());
-                    }
-                }
-                Collections.reverse(gradesList);
-                Collections.reverse(scolaryears);
-            }
-        }
-        catch (EPINetworkException e)
-        {
-            e.printStackTrace();
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
+//        try
+//        {
+//            EPIJSONObject objs = RequestManager.GradesRequest(this.token);
+//            if (objs != null && objs instanceof EPIError)
+//            {
+//                //Handle Error EPIError
+//            }
+//            else if (objs instanceof EPIGrades)
+//            {
+//                for (EPIGrades.Grade grade : ((EPIGrades) objs).notes)
+//                {
+//                    gradesList.add(grade);
+//                    if (!scolaryears.contains(((Integer) grade.scolaryear.intValue()).toString()))
+//                    {
+//                        scolaryears.add(((Integer) grade.scolaryear.intValue()).toString());
+//                    }
+//                }
+//                Collections.reverse(gradesList);
+//                Collections.reverse(scolaryears);
+//            }
+//        }
+//        catch (EPINetworkException e)
+//        {
+//            e.printStackTrace();
+//        }
+//        catch (Exception e)
+//        {
+//            e.printStackTrace();
+//        }
 
         /* HANDLING LISTVIEW */
 

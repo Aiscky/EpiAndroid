@@ -1,5 +1,6 @@
 package com.woivre.thibault.epiandroid.fragments;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -11,15 +12,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.woivre.thibault.epiandroid.R;
 import com.woivre.thibault.epiandroid.activities.LoginActivity;
+import com.woivre.thibault.epiandroid.adapters.MessagesAdapter;
 import com.woivre.thibault.epiandroid.objects.EPIError;
 import com.woivre.thibault.epiandroid.objects.EPIJSONObject;
 import com.woivre.thibault.epiandroid.objects.EPIMessage;
 import com.woivre.thibault.epiandroid.objects.EPIUser;
 import com.woivre.thibault.epiandroid.request.EPINetworkException;
+import com.woivre.thibault.epiandroid.request.ILoadImageOnPostExecute;
+import com.woivre.thibault.epiandroid.request.IUpdateViewOnPostExecute;
 import com.woivre.thibault.epiandroid.request.RequestManager;
 import com.woivre.thibault.epiandroid.utils.Utils;
 
@@ -35,15 +40,12 @@ public class WelcomeFragment extends android.app.Fragment {
     String password;
     String token;
 
-    public WelcomeFragment() {
-        // Required empty public constructor
-    }
+    public WelcomeFragment()
+    {}
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        /* GETTING DATA FROM API */
 
         Bundle b = this.getArguments();
         login = b.getString(LoginActivity.LOGIN);
@@ -57,67 +59,131 @@ public class WelcomeFragment extends android.app.Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_welcome, container, false);
 
-        /* ADD CONTENT DYNAMICALLY TO VIEW */
+        /* SETTING MESSAGES LISTVIEW */
 
-        try {
-            EPIJSONObject rObjUser = RequestManager.UserRequest(this.token, this.login);
-            if (rObjUser instanceof EPIError) {
-                //TODO Make EpiError
-            }
-            else {
-                ImageView photoProfil = (ImageView)view.findViewById(R.id.photo_profil);
-                Drawable myDrawable = RequestManager.LoadImageFromUrl(((EPIUser)rObjUser).picture);
-                photoProfil.setImageDrawable(myDrawable);
+        ListView messagesListView = ((ListView) view.findViewById(R.id.welcome_messageslist));
+        messagesListView.setAdapter(new MessagesAdapter(new ArrayList<EPIMessage>(), this.getActivity()));
 
-                TextView login = (TextView)view.findViewById(R.id.login);
-                login.setText(this.login);
+        /* UPDATING MESSAGES LISTVIEW INFOS */
 
-                TextView log_act =(TextView)view.findViewById(R.id.log_act);
-                log_act.setText(((EPIUser) rObjUser).nsstat.active.toString() + "h");
-
-                TextView log_idle =(TextView)view.findViewById(R.id.log_idle);
-                log_idle.setText(((EPIUser)rObjUser).nsstat.idle.toString() + "h");
-
-                TextView gpa_value = (TextView)view.findViewById(R.id.gpa_value);
-                gpa_value.setText("GPA : " + ((EPIUser) rObjUser).gpa[0].gpa);
-
-                TextView credits_value =(TextView)view.findViewById(R.id.credits_value);
-                credits_value.setText("Credits : " + ((EPIUser) rObjUser).credits.toString());
-
-            }
+        try
+        {
+            RequestManager.MessagesRequest(this.token, new UpdateMessagesView(view));
         } catch (EPINetworkException e) {
             Intent intent = new Intent(getActivity(), LoginActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
-
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        try {
-            EPIJSONObject[] rObjList = RequestManager.MessagesRequest(this.token);
-            if (rObjList.length != 0 && rObjList[0] instanceof EPIError) {
-                //TODO Make EpiError
-            }
-            else {
-                LinearLayout messagesList = (LinearLayout)view.findViewById(R.id.messages_list);
+        /* FILLING INTERFACE */
 
-                for (EPIJSONObject msg : rObjList)
-                {
-                    TextView newMsg = new TextView(this.getActivity());
-                    newMsg.setText(((EPIMessage)msg).title);
-                    messagesList.addView(newMsg);
-                }
-            }
+        try
+        {
+            Log.d("Login", this.login);
+            RequestManager.UserRequest(this.token, this.login, new UpdateUserInfoView(view));
         } catch (EPINetworkException e) {
             Intent intent = new Intent(getActivity(), LoginActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
-
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         return view;
+    }
+
+    /* Update class to update user info */
+
+    class UpdateUserInfoView implements IUpdateViewOnPostExecute
+    {
+        View mView;
+
+        public UpdateUserInfoView(View view)
+        {
+            this.mView = view;
+        }
+
+        @Override
+        public void UpdateView(EPIJSONObject[] objs) {
+            Log.d("INFO", "ENTER UPDATEVIEW");
+
+            if (objs[0] instanceof EPIError)
+            {
+                //TODOERROR
+            }
+            else if (objs[0] instanceof EPIUser)
+            {
+                Log.d("INFO", "ENTER UPDATE");
+
+                /* UPDATE PROFIL IMAGE */
+
+                try
+                {
+                    RequestManager.LoadImageFromUrl(((EPIUser) objs[0]).picture, new UpdatePhotoView(mView));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                /* UPDATE USERINFOS VIEW */
+
+                EPIUser user = ((EPIUser) objs[0]);
+
+                ((TextView) mView.findViewById(R.id.welcome_login)).setText(login);
+                ((TextView) mView.findViewById(R.id.welcome_gpa)).setText(user.gpa[0].gpa.toString());
+                ((TextView) mView.findViewById(R.id.welcome_credits)).setText(((Integer) user.credits.intValue()).toString());
+                ((TextView) mView.findViewById(R.id.welcome_logact)).setText(user.nsstat.active.toString());
+                ((TextView) mView.findViewById(R.id.welcome_logidle)).setText(user.nsstat.idle.toString());
+            }
+        }
+    }
+
+    /* Update class to update messages */
+
+    class UpdateMessagesView implements IUpdateViewOnPostExecute
+    {
+        View mView;
+
+        public UpdateMessagesView(View view)
+        {
+            this.mView = view;
+        }
+
+        @Override
+        public void UpdateView(EPIJSONObject[] objs) {
+            if (objs.length != 0 && objs[0] instanceof EPIError) {
+                //TODO ERROR
+            }
+            else
+            {
+                ListView messagesListView = ((ListView) this.mView.findViewById(R.id.welcome_messageslist));
+                ArrayList<EPIMessage> messageListData = ((MessagesAdapter) messagesListView.getAdapter()).messagesList;
+
+                for (EPIJSONObject msg : objs)
+                {
+                    messageListData.add(((EPIMessage) msg));
+                }
+
+                ((MessagesAdapter) messagesListView.getAdapter()).notifyDataSetChanged();
+            }
+        }
+    }
+
+    /* Update photo */
+
+    class UpdatePhotoView implements ILoadImageOnPostExecute
+    {
+        View mView;
+
+        public UpdatePhotoView(View view)
+        {
+            mView = view;
+        }
+
+        @Override
+        public void LoadImage(Drawable d) {
+            ((ImageView) mView.findViewById(R.id.welcome_photo)).setImageDrawable(d);
+        }
     }
 }

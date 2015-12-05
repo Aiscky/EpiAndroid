@@ -1,106 +1,124 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".fragments.WelcomeFragment">
+
+    <LinearLayout android:id="@+id/welcome_body"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        tools:context=".fragments.WelcomeFragment">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp">
 
-        <LinearLayout android:id="@+id/body_info"
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/welcome_photo"
+            android:layout_weight="1"
+            android:contentDescription="Profil's photo"
+            android:adjustViewBounds="true"
+            android:layout_marginRight="5dp"
+            android:layout_gravity="left"/>
 
-            <ImageView
+        <LinearLayout android:id="@+id/welcome_infos"
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginLeft="5dp">
+
+            <TextView android:id="@+id/welcome_login"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/photo_profil"
+                android:layout_height="0dp"
                 android:layout_weight="1"
-                android:contentDescription="photo_profil"
-                android:adjustViewBounds="true"/>
+                android:textSize="20sp"
+                android:gravity="center"
+                android:padding="5dp"
+                android:background="#bebebe"/>
 
-            <LinearLayout android:id="@+id/info_profil"
-                android:orientation="vertical"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="0dp"
                 android:layout_weight="1"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="0dp"
-                android:layout_marginRight="0dp"
-                android:layout_marginBottom="0dp">
+                android:orientation="horizontal"
+                android:padding="5dp"
+                android:background="#bebebe">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/login"
-                    android:textSize="20sp"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="@string/welcome_gpahint"/>
+
+                <TextView
+                    android:id="@+id/welcome_gpa"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
                     android:textColor="#000000" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/gpa_value"
-                    android:textColor="#000000"/>
+            </LinearLayout>
 
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/credits_value"
-                    android:textColor="#000000"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Log time"
-                    android:id="@+id/log_time" />
-
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:id="@+id/log_info">
+                    android:layout_weight="1"
+                    android:text="@string/welcome_creditshint"/>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:singleLine="false"
-                        android:id="@+id/log_act"
-                        android:layout_gravity="left"
-                        android:textColor="#1db71d" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/log_idle"
-                        android:layout_gravity="right"
-                        android:layout_marginLeft="10sp"
-                        android:textColor="#ff0000" />
-                </LinearLayout>
+                <TextView
+                    android:id="@+id/welcome_credits"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:textColor="#000000" />
 
             </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="@string/welcome_loghint"/>
+
+            <LinearLayout android:id="@+id/welcome_loginfos"
+                android:orientation="horizontal"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp">
+
+                <TextView android:id="@+id/welcome_logact"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:textColor="#1db71d" />
+
+                <TextView android:id="@+id/welcome_logidle"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:textColor="#ff0000" />
+
+            </LinearLayout>
+
         </LinearLayout>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:id="@+id/title_messages"
-            android:textSize="24sp"
-            android:text="Messages"
-            android:layout_marginBottom="10sp"
-            android:layout_marginTop="15sp"
-            android:textColor="#000000"/>
-
-        <LinearLayout android:id="@+id/messages_list"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-        </LinearLayout>
-
 
     </LinearLayout>
 
-</ScrollView>
+    <ListView android:id="@+id/welcome_messageslist"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2">
+    </ListView>
+
+</LinearLayout>

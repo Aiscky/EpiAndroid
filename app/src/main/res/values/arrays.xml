@@ -1,10 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <array name="mTitles">
+    <array name="menu_titles">
         <item>Welcome</item>
-        <item>Planning</item>
-        <item>Projects</item>
-        <item>Modules</item>
-        <item>Grades</item>
+        <item>My schedule</item>
+        <item>My projects</item>
+        <item>My modules</item>
+        <item>My marks</item>
     </array>
+
+    <array name="welcome_icon">
+        <item name="name">@drawable/epitech_icon</item> <!-- name -->
+        <item>25</item> <!-- sizeX -->
+        <item>22</item> <!-- sizeY -->
+    </array>
+
+    <array name="planning_icon">
+        <item>25</item> <!-- sizeX -->
+        <item>22</item> <!-- sizeY -->
+        <item>249</item> <!-- startX -->
+        <item>288</item> <!-- startY -->
+    </array>
+
+    <array name="projects_icon">
+        <item>30</item> <!-- size -->
+        <item>36</item> <!-- sizeY -->
+        <item>321</item> <!-- startX -->
+        <item>997</item> <!-- startY -->
+    </array>
+
+    <array name="modules_icon">
+        <item>25</item> <!-- size -->
+        <item>22</item> <!-- sizeY -->
+        <item>249</item> <!-- startX -->
+        <item>310</item> <!-- startY -->
+    </array>
+
+    <array name="marks_icon">
+        <item>25</item> <!-- size -->
+        <item>22</item> <!-- sizeY -->
+        <item>288</item> <!-- startX -->
+        <item>416</item> <!-- startY -->
+    </array>
+
+    <array name="menu_icons">
+        <item>@array/welcome_icon</item>
+        <item>@array/planning_icon</item>
+        <item>@array/projects_icon</item>
+        <item>@array/modules_icon</item>
+        <item>@array/marks_icon</item>
+    </array>
+
 </resources>

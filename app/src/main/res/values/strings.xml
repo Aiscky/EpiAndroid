@@ -45,4 +45,8 @@
     <string name="api_projects_url">/projects</string>
     <string name="api_projectregister_url">/project</string>
 
+    <string name="welcome_creditshint">Crédits</string>
+    <string name="welcome_gpahint">GPA</string>
+    <string name="welcome_loghint">LogTime</string>
+
 </resources>
