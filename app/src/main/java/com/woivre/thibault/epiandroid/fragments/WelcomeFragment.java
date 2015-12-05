@@ -56,7 +56,7 @@ public class WelcomeFragment extends android.app.Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+
         View view = inflater.inflate(R.layout.fragment_welcome, container, false);
 
         /* SETTING MESSAGES LISTVIEW */
