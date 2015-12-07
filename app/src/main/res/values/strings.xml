@@ -28,17 +28,27 @@
 
     <string name="modulesprev_text">Previous</string>
     <string name="modulesnext_text">Next</string>
+    <string name="modules_start">Start registration</string>
+    <string name="modules_end">End registration</string>
+
     <string name="moduleregister_text">Register</string>
     <string name="moduleunregister_text">Unregister</string>
     <string name="moduleexpand_text">Expand</string>
     <string name="modulecollapse_text">Hide</string>
-    <string name="modulegrade_hint">Grade</string>
+    <string name="modulegrade_hint">GRADE</string>
     <string name="module_semesterhint">Semester</string>
-    <string name="module_descriptionhint">Description</string>
-    <string name="module_competencehint">Competence</string>
+    <string name="module_descriptionhint">DESCRIPTION</string>
+    <string name="module_competencehint">COMPETENCES</string>
+    <string name="module_scolaryearhint">Scolar Year</string>
+
+    <string name="grade_corrector">Corrector</string>
+    <string name="grade_modulehint">Module</string>
+    <string name="grade_markhint">Mark</string>
+    <string name="grade_datehint">Date</string>
 
     <string name="planning_nextday">Next day</string>
     <string name="planning_prevday">Previous day</string>
+    <string name="planning_pickday">Select day</string>
 
     <string name="project_checkboxregistered_hint">Only Registered Projects</string>
     <string name="title_project">Projects</string>

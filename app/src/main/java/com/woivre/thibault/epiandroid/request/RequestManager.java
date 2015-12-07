@@ -26,28 +26,7 @@ import com.woivre.thibault.epiandroid.utils.Utils;
  * Created by Thibault on 25/11/2015.
  */
 
-/* CREATE ASYNTASK AND CONVERT TO JSON */
-
 public class RequestManager {
-
-    //TODO REMOVE
-
-//    public void GenericRequest(Tuple[] params,
-//                                                                   AsyncHTTPRequest.RequestType type,
-//                                                                   String URLAddress, Class<? extends EPIJSONObject> objType,
-//                                                                   IUpdateViewOnPostExecute updateObj) throws Exception
-//    {
-//        AsyncHTTPRequest request = new AsyncHTTPRequest();
-//
-//        if (!Utils.isNetworkAvailable())
-//            throw new EPINetworkException();
-//
-//        request.requestType = type;
-//        request.URLAddress = URLAddress;
-//        request.updateView = updateObj;
-//
-//        request.execute(params);
-//    }
 
     public static EPIJSONObject[] ParseEPIJSON(String JSONData, Class<? extends EPIJSONObject> returnType, Boolean isArray)
     {
@@ -56,7 +35,8 @@ public class RequestManager {
         if (isResponseError(JSONData))
         {
             objs = new EPIJSONObject[1];
-            objs[0] = new Gson().fromJson(JSONData, EPIError.class);
+            objs[0] = new EPIError();
+            //objs[0] = new Gson().fromJson(JSONData, EPIError.class);
         }
         else if (isArray == true)
         {
@@ -91,8 +71,9 @@ public class RequestManager {
             if (parser.parse(JSONData).isJsonArray() || JSONData.equals("{}") || !parser.parse(JSONData).getAsJsonObject().has("error")) {
                 return false;
             }
-        } catch (JsonSyntaxException e) {
-            return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return true;
         }
         return true;
     }
@@ -195,6 +176,36 @@ public class RequestManager {
         params[0] = new Tuple("token", token);
         params[1] = new Tuple("start", start);
         params[2] = new Tuple("end", end);
+
+        request.execute(params);
+    }
+
+    public static void EventRequest(String token,
+                                    String scolaryear,
+                                    String codemodule,
+                                    String codeinstance,
+                                    String codeacti,
+                                    String codeevent,
+                                    IUpdateViewOnPostExecute updateView) throws Exception
+    {
+        if (!Utils.isNetworkAvailable())
+            throw new EPINetworkException();
+
+        AsyncHTTPRequest request = new AsyncHTTPRequest();
+
+        request.TaskType = AsyncHTTPRequest.RequestType.GET;
+        request.URLAddress = ApplicationContextProvider.getContext().getString(R.string.epitech_api_url) + ApplicationContextProvider.getContext().getString(R.string.api_eventregister_url);
+        request.UpdateViewParamType = EPIEventDetail.class;
+        request.UpdateView = updateView;
+        request.IsArray = false;
+
+        Tuple[] params = new Tuple[6];
+        params[0] = new Tuple("token", token);
+        params[1] = new Tuple("scolaryear", scolaryear);
+        params[2] = new Tuple("codemodule", codemodule);
+        params[3] = new Tuple("codeinstance", codeinstance);
+        params[4] = new Tuple("codeacti", codeacti);
+        params[5] = new Tuple("codeevent", codeevent);
 
         request.execute(params);
     }
@@ -376,7 +387,7 @@ public class RequestManager {
 
         request.TaskType = AsyncHTTPRequest.RequestType.POST;
         request.URLAddress = ApplicationContextProvider.getContext().getString(R.string.epitech_api_url) + ApplicationContextProvider.getContext().getString(R.string.api_module_url);
-        request.UpdateViewParamType = EPIError.class;
+        request.UpdateViewParamType = EPIModuleSubscribeResponse.class;
         request.UpdateView = updateView;
         request.IsArray = false;
 
@@ -403,7 +414,7 @@ public class RequestManager {
 
         request.TaskType = AsyncHTTPRequest.RequestType.DELETE;
         request.URLAddress = ApplicationContextProvider.getContext().getString(R.string.epitech_api_url) + ApplicationContextProvider.getContext().getString(R.string.api_module_url);
-        request.UpdateViewParamType = EPIError.class;
+        request.UpdateViewParamType = EPIModuleSubscribeResponse.class;
         request.UpdateView = updateView;
         request.IsArray = false;
 

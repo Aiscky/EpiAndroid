@@ -3,6 +3,8 @@
     <color name="lightblue">#3498DB</color>
     <color name="blue">#2980B9</color>
     <color name="grey">#BDC3C7</color>
+    <color name="darkgrey">#aaafb3</color>
+    <color name="lightgrey">#ced4d9</color>
     <color name="greybluelight">#34495E</color>
     <color name="greyblue">#2C3E50</color>
 

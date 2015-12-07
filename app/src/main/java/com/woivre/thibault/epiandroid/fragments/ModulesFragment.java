@@ -1,6 +1,8 @@
 package com.woivre.thibault.epiandroid.fragments;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -27,6 +29,7 @@ import com.woivre.thibault.epiandroid.objects.EPIError;
 import com.woivre.thibault.epiandroid.objects.EPIJSONObject;
 import com.woivre.thibault.epiandroid.objects.EPIUser;
 import com.woivre.thibault.epiandroid.request.EPINetworkException;
+import com.woivre.thibault.epiandroid.request.IUpdateViewOnPostExecute;
 import com.woivre.thibault.epiandroid.request.RequestManager;
 
 import java.text.SimpleDateFormat;
@@ -62,53 +65,22 @@ public class ModulesFragment extends android.app.Fragment {
 
         /* GETTING USER INFOS */
 
-//        try {
-//            EPIJSONObject rObj = RequestManager.UserRequest(this.token, this.login);
-//            if (rObj instanceof EPIError) {
-//            }
-//            else
-//            {
-//                location = ((EPIUser) rObj).location;
-//                course_code = ((EPIUser) rObj).course_code;
-//            }
-//        } catch (EPINetworkException e) {
-//            e.printStackTrace();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-
-
-        /* GETTING ALL MODULES INFOS */
-
-        ArrayList<EPIAllModules.Item> modulesData = new ArrayList<EPIAllModules.Item>();
-        ArrayList<String> semesters = new ArrayList<String>();
-
-//        try {
-//            EPIJSONObject rObj = RequestManager.AllModulesRequest(token, 1999.0, location, course_code);
-//            if (rObj instanceof EPIError) {
-//
-//            }
-//            else
-//            {
-//                for (EPIAllModules.Item item : ((EPIAllModules) rObj).items)
-//                {
-//                    modulesData.add(item);
-//                    if (!semesters.contains(((Integer) item.semester.intValue()).toString()))
-//                    {
-//                        semesters.add(((Integer) item.semester.intValue()).toString());
-//                    }
-//                }
-//            }
-//        } catch (EPINetworkException e) {
-//            e.printStackTrace();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
+        try
+        {
+            RequestManager.UserRequest(this.token, this.login, new UpdateUserInfos(getActivity(), view));
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            Intent intent = new Intent(getActivity(), LoginActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        }
 
         /* DYNAMICALLY FILL VIEW */
 
         ModulesListView = (ListView)view.findViewById(R.id.modules_list);
-        ModulesListView.setAdapter(new ModulesAdapter(this.getActivity(), modulesData, this.token));
+        ModulesListView.setAdapter(new ModulesAdapter(this.getActivity(), new ArrayList<EPIAllModules.Item>(), this.token));
 
         /* SET SPINNER */
 
@@ -116,8 +88,6 @@ public class ModulesFragment extends android.app.Fragment {
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item);
 
         modulesSpinner.setAdapter(spinnerAdapter);
-        spinnerAdapter.addAll(semesters);
-        ((ArrayAdapter<String>)modulesSpinner.getAdapter()).notifyDataSetChanged();
 
         modulesSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -149,9 +119,88 @@ public class ModulesFragment extends android.app.Fragment {
             @Override
             public void onClick(View v) {
                 v.getRootView().findViewById(R.id.modules_infoslayout).setVisibility(View.GONE);
+                v.getRootView().findViewById(R.id.modules_list).setVisibility(View.VISIBLE);
             }
         });
 
+        /* GETTING ALL MODULES INFOS */
+
+        try
+        {
+            RequestManager.AllModulesRequest(token, 1999.0, location, course_code, new UpdateModulesView(getActivity(), view));
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            Intent intent = new Intent(getActivity(), LoginActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        }
+
         return view;
+    }
+
+    public class UpdateUserInfos implements IUpdateViewOnPostExecute
+    {
+        private Context mContext;
+        private View mView;
+
+        public UpdateUserInfos(Context context, View view)
+        {
+            mContext = context;
+            mView = view;
+        }
+
+        @Override
+        public void UpdateView(EPIJSONObject[] objs) {
+            if (objs.length != 0 && objs[0] instanceof EPIError) {
+
+            }
+            else if (objs.length != 0 && objs[0] instanceof EPIUser)
+            {
+                location = ((EPIUser) objs[0]).location;
+                course_code = ((EPIUser) objs[0]).course_code;
+            }
+        }
+    }
+
+    public class UpdateModulesView implements IUpdateViewOnPostExecute
+    {
+        Context mContext;
+        View mView;
+
+        public UpdateModulesView(Context context, View view)
+        {
+            mContext = context;
+            mView = view;
+        }
+
+        @Override
+        public void UpdateView(EPIJSONObject[] objs) {
+            if (objs.length != 0 && objs[0] instanceof EPIError) {
+
+            }
+            else if (objs.length != 0 && objs[0] instanceof EPIAllModules)
+            {
+                ArrayList<String> semesters = new ArrayList<>();
+                ArrayList<EPIAllModules.Item> modules = new ArrayList<>();
+
+                for (EPIAllModules.Item item : ((EPIAllModules) objs[0]).items)
+                {
+                    modules.add(item);
+                    if (!semesters.contains(((Integer) item.semester.intValue()).toString()))
+                    {
+                        semesters.add(((Integer) item.semester.intValue()).toString());
+                    }
+                }
+
+                ((ModulesAdapter) ((ListView) mView.findViewById(R.id.modules_list)).getAdapter()).ModulesList = modules;
+                ((ModulesAdapter) ((ListView) mView.findViewById(R.id.modules_list)).getAdapter()).arrayList.addAll(modules);
+                ((ModulesAdapter) ((ListView) mView.findViewById(R.id.modules_list)).getAdapter()).notifyDataSetChanged();
+
+                ((ArrayAdapter<String>) ((Spinner) mView.findViewById(R.id.modules_spinner)).getAdapter()).addAll(semesters);
+                ((ArrayAdapter<String>) ((Spinner) mView.findViewById(R.id.modules_spinner)).getAdapter()).notifyDataSetChanged();
+            }
+        }
     }
 }

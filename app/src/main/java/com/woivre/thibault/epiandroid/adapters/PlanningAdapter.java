@@ -1,6 +1,8 @@
 package com.woivre.thibault.epiandroid.adapters;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,19 +14,15 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.woivre.thibault.epiandroid.R;
+import com.woivre.thibault.epiandroid.activities.LoginActivity;
 import com.woivre.thibault.epiandroid.objects.EPIError;
 import com.woivre.thibault.epiandroid.objects.EPIEventPlanning;
-import com.woivre.thibault.epiandroid.request.EPINetworkException;
+import com.woivre.thibault.epiandroid.objects.EPIJSONObject;
+import com.woivre.thibault.epiandroid.request.IUpdateViewOnPostExecute;
 import com.woivre.thibault.epiandroid.request.RequestManager;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
-
-/**
- * Created by Thibault on 28/11/2015.
- */
 
 public class PlanningAdapter extends BaseAdapter {
     Context mContext;
@@ -40,7 +38,7 @@ public class PlanningAdapter extends BaseAdapter {
         mContext = context;
         this.EPIEventsList = EPIEventsList;
         inflater = LayoutInflater.from(mContext);
-        this.arrayList = new ArrayList<EPIEventPlanning>();
+        this.arrayList = new ArrayList<>();
         this.arrayList.addAll(EPIEventsList);
         this.token = token;
     }
@@ -95,6 +93,15 @@ public class PlanningAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
+        if (EPIEventsList.get(position).past != null && EPIEventsList.get(position).past)
+        {
+            convertView.findViewById(R.id.planningevent_item).setBackgroundColor(Color.parseColor("#BDC3C7"));
+        }
+        else
+        {
+            convertView.findViewById(R.id.planningevent_item).setBackgroundColor(Color.parseColor("#ced4d9"));
+        }
+
         if (EPIEventsList.get(position).acti_title != null)
             holder.title.setText(EPIEventsList.get(position).acti_title);
 
@@ -108,129 +115,270 @@ public class PlanningAdapter extends BaseAdapter {
             holder.room.setText(EPIEventsList.get(position).room.code);
 
         if (EPIEventsList.get(position).allow_register != null &&
-                EPIEventsList.get(position).allow_register &&
-                EPIEventsList.get(position).event_registered != null &&
-                !EPIEventsList.get(position).event_registered)
+                EPIEventsList.get(position).allow_register)
         {
-//            holder.registeractivity.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    try
-//                    {
-//                        EPIEventPlanning obj = EPIEventsList.get(position);
-//
-//                        EPIError error = RequestManager.RegisterEventRequest(token, obj.scolaryear, obj.codemodule, obj.codeinstance, obj.codeacti, obj.codeevent);
-//                        if (error != null)
-//                        {
-//                            ((TextView)v.getRootView().findViewById(R.id.planning_alert)).setText("Impossible to register to : " + obj.acti_title);
-//                            ((TextView)v.getRootView().findViewById(R.id.planning_alert)).setVisibility(View.VISIBLE);
-//                            holder.registeractivity.setVisibility(View.GONE);
-//                        }
-//                        else
-//                        {
-//                            obj.allow_register = false;
-//                            obj.event_registered = true;
-//                            ((TextView)v.getRootView().findViewById(R.id.planning_alert)).setText("Registered to activity : " + obj.acti_title);
-//                            ((TextView)v.getRootView().findViewById(R.id.planning_alert)).setVisibility(View.VISIBLE);
-//                            holder.unregisteractivity.setVisibility(View.VISIBLE);
-//                            holder.registeractivity.setVisibility(View.GONE);
-//                        }
-//                    }
-//                    catch (EPINetworkException e)
-//                    {
-//                        e.printStackTrace();
-//                    }
-//                    catch (Exception e)
-//                    {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            });
+            holder.registeractivity.setVisibility(View.VISIBLE);
+            holder.registeractivity.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    try
+                    {
+                        EPIEventPlanning obj = EPIEventsList.get(position);
+
+                        RequestManager.RegisterEventRequest(token,
+                                obj.scolaryear,
+                                obj.codemodule,
+                                obj.codeinstance,
+                                obj.codeacti,
+                                obj.codeevent,
+                                new UpdateOnRegister(holder, obj));
+                    } catch (Exception e) {
+                        Intent intent = new Intent(mContext, LoginActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        mContext.startActivity(intent);
+                    }
+                }
+            });
         }
         else
         {
             holder.registeractivity.setVisibility(View.GONE);
         }
 
-        if (EPIEventsList.get(position).allow_token != null && EPIEventsList.get(position).allow_token == true)
+        if (EPIEventsList.get(position).allow_token != null &&
+                EPIEventsList.get(position).allow_token &&
+                EPIEventsList.get(position).module_registered != null &&
+                EPIEventsList.get(position).module_registered)
         {
-//            holder.validatetoken.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    try
-//                    {
-//                        EPIEventPlanning obj = EPIEventsList.get(position);
-//                        String tokenNumber = "00000000";
-//
-//                        tokenNumber = ((EditText)v.getRootView().findViewById(R.id.planningevent_token)).getText().toString();
-//                        Log.d("TOKENNUMBER", tokenNumber);
-//
-//                        EPIError error = RequestManager.ValidateTokenRequest(token, obj.scolaryear, obj.codemodule, obj.codeinstance, obj.codeacti, obj.codeevent, tokenNumber);
-//                        if (error != null)
-//                        {
-//                            ((TextView)v.getRootView().findViewById(R.id.planning_alert)).setText("Enable to Validate token for : " + obj.acti_title);
-//                            ((TextView)v.getRootView().findViewById(R.id.planning_alert)).setVisibility(View.VISIBLE);
-//                            holder.validatetoken.setVisibility(View.GONE);
-//                        }
-//                        else
-//                        {
-//                            obj.allow_token = false;
-//                            ((TextView)v.getRootView().findViewById(R.id.planning_alert)).setText("Validated token for : " + obj.acti_title);
-//                            ((TextView)v.getRootView().findViewById(R.id.planning_alert)).setVisibility(View.VISIBLE);
-//                            holder.validatetoken.setVisibility(View.GONE);
-//                        }
-//                    }
-//                    catch (EPINetworkException e)
-//                    {
-//                        e.printStackTrace();
-//                    }
-//                    catch (Exception e)
-//                    {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            });
+            holder.validatetoken.setVisibility(View.VISIBLE);
+            holder.validatetoken.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(final View v) {
+                    try
+                    {
+                        final EPIEventPlanning obj = EPIEventsList.get(position);
+
+                        /* SETTING TOKEN ALERTDIALOG */
+
+                        android.app.AlertDialog.Builder alertDialog = new android.app.AlertDialog.Builder(mContext);
+                        alertDialog.setTitle("Enter Token");
+
+                        final EditText input = new EditText(mContext);
+
+                        alertDialog.setView(input);
+
+                        alertDialog.setPositiveButton("Validate", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                try
+                                {
+                                    RequestManager.ValidateTokenRequest(token,
+                                            obj.scolaryear,
+                                            obj.codemodule,
+                                            obj.codeinstance,
+                                            obj.codeacti,
+                                            obj.codeevent,
+                                            input.getText().toString(),
+                                            new UpdateOnValidateToken(holder, obj));
+                                }
+                                catch (Exception e)
+                                {
+                                    Intent intent = new Intent(mContext, LoginActivity.class);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    mContext.startActivity(intent);
+                                }
+                            }
+                        });
+
+                        alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        });
+
+                        alertDialog.show();
+                    }
+                    catch (Exception e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+            });
         }
         else
         {
-
-           holder.validatetoken.setVisibility(View.GONE);
+            holder.validatetoken.setVisibility(View.GONE);
         }
 
+        if (EPIEventsList.get(position).allow_register != null &&
+                EPIEventsList.get(position).allow_register) {
+            holder.unregisteractivity.setVisibility(View.VISIBLE);
+            holder.unregisteractivity.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    EPIEventPlanning obj = EPIEventsList.get(position);
 
-//        holder.unregisteractivity.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                try {
-//                    EPIEventPlanning obj = EPIEventsList.get(position);
-//
-//                    EPIError error = RequestManager.UnregisterEventRequest(token, obj.scolaryear, obj.codemodule, obj.codeinstance, obj.codeacti, obj.codeevent);
-//                    if (error != null) {
-//                        holder.unregisteractivity.setVisibility(View.GONE);
-//                    }
-//                    else
-//                    {
-//                        obj.allow_register = true;
-//                        obj.event_registered = false;
-//                        ((TextView) v.getRootView().findViewById(R.id.planning_alert)).setText("Unregistered to activity : " + obj.acti_title);
-//                        ((TextView) v.getRootView().findViewById(R.id.planning_alert)).setVisibility(View.VISIBLE);
-//                        holder.unregisteractivity.setVisibility(View.GONE);
-//                        holder.registeractivity.setVisibility(View.VISIBLE);
-//                    }
-//                } catch (EPINetworkException e) {
-//                    e.printStackTrace();
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        });
+                    try {
+                        RequestManager.UnregisterEventRequest(token,
+                                obj.scolaryear,
+                                obj.codemodule,
+                                obj.codeinstance,
+                                obj.codeacti,
+                                obj.codeevent,
+                                new UpdateOnUnregister(holder, obj));
+                    } catch (Exception e) {
+                        Intent intent = new Intent(mContext, LoginActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        mContext.startActivity(intent);
+                    }
+                }
+            });
+        }
+        else
+        {
+            holder.unregisteractivity.setVisibility(View.GONE);
+        }
 
         return convertView;
     }
 
+    public class UpdateOnRegister implements IUpdateViewOnPostExecute
+    {
+        ViewHolder holder;
+        EPIEventPlanning event;
+
+        public UpdateOnRegister(ViewHolder holder, EPIEventPlanning event)
+        {
+            this.holder = holder;
+            this.event = event;
+        }
+
+        @Override
+        public void UpdateView(EPIJSONObject[] objs) {
+            android.app.AlertDialog.Builder popupRegister = new android.app.AlertDialog.Builder(mContext)
+                    .setTitle("Register");
+
+
+            if (objs.length != 0 && objs[0] instanceof EPIError)
+            {
+                popupRegister.setMessage("Failed to register to " + event.acti_title)
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        })
+                        .show();
+            }
+            else
+            {
+                popupRegister.setMessage("Registered successfully to " + event.acti_title)
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        })
+                        .show();
+                holder.unregisteractivity.setVisibility(View.VISIBLE);
+            }
+            holder.registeractivity.setVisibility(View.GONE);
+        }
+    }
+
+    public class UpdateOnUnregister implements IUpdateViewOnPostExecute
+    {
+        ViewHolder holder;
+        EPIEventPlanning event;
+
+        public UpdateOnUnregister(ViewHolder holder, EPIEventPlanning event)
+        {
+            this.holder = holder;
+            this.event = event;
+        }
+
+        @Override
+        public void UpdateView(EPIJSONObject[] objs) {
+            android.app.AlertDialog.Builder popupRegister = new android.app.AlertDialog.Builder(mContext)
+                    .setTitle("Unregister");
+
+
+            Log.d("INFO1", event.toString());
+            if (objs.length != 0 && objs[0] instanceof EPIError)
+            {
+                popupRegister.setMessage("Failed to unregister from " + event.acti_title)
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        })
+                        .show();
+            }
+            else
+            {
+                popupRegister.setMessage("Unregistered successfully to " + event.acti_title)
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        })
+                        .show();
+                holder.registeractivity.setVisibility(View.VISIBLE);
+            }
+            holder.unregisteractivity.setVisibility(View.GONE);
+        }
+    }
+
+    public class UpdateOnValidateToken implements IUpdateViewOnPostExecute
+    {
+        ViewHolder holder;
+        EPIEventPlanning event;
+
+        public UpdateOnValidateToken(ViewHolder holder, EPIEventPlanning event)
+        {
+            this.holder = holder;
+            this.event = event;
+        }
+
+        @Override
+        public void UpdateView(EPIJSONObject[] objs) {
+            android.app.AlertDialog.Builder popupRegister = new android.app.AlertDialog.Builder(mContext)
+                    .setTitle("Validate Token");
+
+            if (objs.length != 0 && objs[0] instanceof EPIError)
+            {
+                popupRegister.setMessage("Failed to validate token from " + event.acti_title)
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        })
+                        .show();
+            }
+            else
+            {
+                popupRegister.setMessage("Validated successfully token from " + event.acti_title)
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        })
+                        .show();
+                holder.validatetoken.setVisibility(View.GONE);
+            }
+        }
+    }
+
     public void filter()
     {
-        this.EPIEventsList = new ArrayList<EPIEventPlanning>();
+        this.EPIEventsList = new ArrayList<>();
+
+        /* PREVENT ERROR ON NO ITEM FILTERING */
 
         for (EPIEventPlanning event : arrayList)
         {

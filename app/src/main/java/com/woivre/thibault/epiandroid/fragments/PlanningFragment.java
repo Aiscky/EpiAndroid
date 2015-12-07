@@ -1,14 +1,14 @@
 package com.woivre.thibault.epiandroid.fragments;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.LinearLayout;
+import android.widget.DatePicker;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -18,13 +18,16 @@ import com.woivre.thibault.epiandroid.adapters.PlanningAdapter;
 import com.woivre.thibault.epiandroid.objects.EPIError;
 import com.woivre.thibault.epiandroid.objects.EPIEventPlanning;
 import com.woivre.thibault.epiandroid.objects.EPIJSONObject;
-import com.woivre.thibault.epiandroid.objects.EPIMessage;
-import com.woivre.thibault.epiandroid.request.EPINetworkException;
+import com.woivre.thibault.epiandroid.request.IUpdateViewOnPostExecute;
 import com.woivre.thibault.epiandroid.request.RequestManager;
 
+
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class PlanningFragment extends android.app.Fragment {
 
@@ -32,8 +35,8 @@ public class PlanningFragment extends android.app.Fragment {
     String password;
     String token;
     java.util.Date date;
-    ListView EventsListView;
-    ArrayList<EPIEventPlanning> EventsList;
+    DatePickerDialog datePicker = null;
+    View planningView;
 
     public PlanningFragment()
     {
@@ -57,21 +60,29 @@ public class PlanningFragment extends android.app.Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_planning, container, false);
 
+        planningView = view;
+
         /* GETTING PLANNING DAY INFORMATIONS */
 
         date = new java.util.Date();
-        try {
-            retrieveDayData();
-        } catch (Exception e) {
-            return view;
+
+        try
+        {
+            String currentDay = new SimpleDateFormat("yyyy-MM-dd").format(date);
+            RequestManager.PlanningRequest(token, currentDay, currentDay, new UpdatePlanningView(view));
+        }
+        catch (Exception e)
+        {
+            Intent intent = new Intent(getActivity(), LoginActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
         }
 
         ((TextView)view.findViewById(R.id.planning_displayday)).setText(new SimpleDateFormat("dd MM yyyy").format(date));
 
         /* SETTING LISTVIEW */
 
-        EventsListView = (ListView)view.findViewById(R.id.planningevents_list);
-        EventsListView.setAdapter(new PlanningAdapter(this.getActivity(), EventsList, this.token));
+        ((ListView)view.findViewById(R.id.planningevents_list)).setAdapter(new PlanningAdapter(this.getActivity(), new ArrayList<EPIEventPlanning>(), this.token));
 
         /* SET CLICKLISTENER */
 
@@ -82,15 +93,20 @@ public class PlanningFragment extends android.app.Fragment {
                 c.setTime(date);
                 c.add(Calendar.DATE, -1);
                 date = c.getTime();
-                try {
-                    retrieveDayData();
-                } catch (Exception e) {
-                    return;
+
+                try
+                {
+                    String currentDay = new SimpleDateFormat("yyyy-MM-dd").format(date);
+                    RequestManager.PlanningRequest(token, currentDay, currentDay, new UpdatePlanningView(v.getRootView()));
                 }
-                ((PlanningAdapter)EventsListView.getAdapter()).arrayList = EventsList;
-                ((PlanningAdapter)EventsListView.getAdapter()).EPIEventsList = EventsList;
-                ((PlanningAdapter)EventsListView.getAdapter()).filter();
-                ((TextView)v.getRootView().findViewById(R.id.planning_alert)).setVisibility(View.GONE);
+                catch (Exception e)
+                {
+                    Intent intent = new Intent(getActivity(), LoginActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                }
+
+                v.getRootView().findViewById(R.id.planning_alert).setVisibility(View.GONE);
                 ((TextView)v.getRootView().findViewById(R.id.planning_displayday)).setText(new SimpleDateFormat("dd MM yyyy").format(date));
             }
         });
@@ -102,16 +118,67 @@ public class PlanningFragment extends android.app.Fragment {
                 c.setTime(date);
                 c.add(Calendar.DATE, 1);
                 date = c.getTime();
-                try {
-                    retrieveDayData();
-                } catch (Exception e) {
-                    return;
+
+                try
+                {
+                    String currentDay = new SimpleDateFormat("yyyy-MM-dd").format(date);
+                    RequestManager.PlanningRequest(token, currentDay, currentDay, new UpdatePlanningView(v.getRootView()));
                 }
-                ((PlanningAdapter)EventsListView.getAdapter()).arrayList = EventsList;
-                ((PlanningAdapter)EventsListView.getAdapter()).EPIEventsList = EventsList;
-                ((PlanningAdapter)EventsListView.getAdapter()).filter();
-                ((TextView)v.getRootView().findViewById(R.id.planning_alert)).setVisibility(View.GONE);
+                catch (Exception e)
+                {
+                    Intent intent = new Intent(getActivity(), LoginActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                }
+
+                v.getRootView().findViewById(R.id.planning_alert).setVisibility(View.GONE);
                 ((TextView)v.getRootView().findViewById(R.id.planning_displayday)).setText(new SimpleDateFormat("dd MM yyyy").format(date));
+            }
+        });
+
+        view.findViewById(R.id.planning_daypicker).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Calendar c = Calendar.getInstance();
+                c.setTime(date);
+                int year = c.get(Calendar.YEAR);
+                int month = c.get(Calendar.MONTH);
+                int day = c.get(Calendar.DAY_OF_MONTH);
+
+                if (datePicker == null) {
+                    DatePickerDialog.OnDateSetListener onDateSetListener = new DatePickerDialog.OnDateSetListener() {
+                        @Override
+                        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                            Calendar c = Calendar.getInstance();
+
+                            c.set(year, monthOfYear, dayOfMonth);
+                            date = c.getTime();
+
+                            try
+                            {
+                                String currentDay = new SimpleDateFormat("yyyy-MM-dd").format(date);
+                                RequestManager.PlanningRequest(token, currentDay, currentDay, new UpdatePlanningView(planningView));
+                            }
+                            catch (Exception e)
+                            {
+                                Intent intent = new Intent(getActivity(), LoginActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                startActivity(intent);
+                            }
+
+                            planningView.findViewById(R.id.planning_alert).setVisibility(View.GONE);
+                            ((TextView)planningView.findViewById(R.id.planning_displayday)).setText(new SimpleDateFormat("dd MM yyyy").format(date));
+                        }
+                    };
+
+                    datePicker = new DatePickerDialog(getActivity(), onDateSetListener, year, month, day);
+                }
+                else
+                {
+                    datePicker.updateDate(year, month, day);
+                }
+                datePicker.show();
             }
         });
 
@@ -120,48 +187,83 @@ public class PlanningFragment extends android.app.Fragment {
         ((CheckBox)view.findViewById(R.id.planningevents_registeredcheckbox)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                ((PlanningAdapter)EventsListView.getAdapter()).RegisteredFilter = isChecked;
-                ((PlanningAdapter)EventsListView.getAdapter()).filter();
+                ((PlanningAdapter) ((ListView) buttonView.getRootView().findViewById(R.id.planningevents_list)).getAdapter()).RegisteredFilter = isChecked;
+                ((PlanningAdapter) ((ListView) buttonView.getRootView().findViewById(R.id.planningevents_list)).getAdapter()).filter();
             }
         });
 
         ((CheckBox)view.findViewById(R.id.planningevents_modulescheckbox)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                ((PlanningAdapter)EventsListView.getAdapter()).ModulesFilter = isChecked;
-                ((PlanningAdapter)EventsListView.getAdapter()).filter();
+                ((PlanningAdapter)((ListView) buttonView.getRootView().findViewById(R.id.planningevents_list)).getAdapter()).RegisteredFilter = isChecked;
+                ((PlanningAdapter)((ListView) buttonView.getRootView().findViewById(R.id.planningevents_list)).getAdapter()).filter();
             }
         });
 
         return view;
     }
 
-    /* DATA FONCTIONS */
 
-    public void retrieveDayData() throws Exception
+
+    public class UpdatePlanningView implements IUpdateViewOnPostExecute
     {
-//        try {
-//            String currentDay;
-//
-//            currentDay = new SimpleDateFormat("yyyy-MM-dd").format(date);
-//            EPIJSONObject[] rObj = RequestManager.PlanningRequest(token, currentDay, currentDay);
-//            if (rObj.length != 0 && rObj[0] instanceof EPIError)
-//            {  }
-//            else
-//            {
-//                ArrayList<EPIEventPlanning> eventsList = new ArrayList<EPIEventPlanning>();
-//                for (EPIJSONObject event : rObj)
-//                {
-//                    eventsList.add((EPIEventPlanning)event);
-//                }
-//                this.EventsList = eventsList;
-//            }
-//        } catch (EPINetworkException e) {
-//            e.printStackTrace();
-//            throw new Exception();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            throw new Exception();
-//        }
+        View mView;
+
+        public UpdatePlanningView(View view)
+        {
+            mView = view;
+        }
+
+        @Override
+        public void UpdateView(EPIJSONObject[] objs) {
+            if (objs.length != 0 && objs[0] instanceof EPIError)
+            {
+                //TODO MAKE ERROR
+            }
+            else if (objs.length == 0 || objs[0] instanceof EPIEventPlanning)
+            {
+                PlanningAdapter pAdapter = ((PlanningAdapter) ((ListView) mView.findViewById(R.id.planningevents_list)).getAdapter());
+
+                ArrayList<EPIEventPlanning> tmp = new ArrayList<>();
+
+                for (EPIJSONObject event : objs)
+                {
+                    tmp.add(((EPIEventPlanning) event));
+                }
+
+                Collections.sort(tmp, new EventDateComparator());
+
+                pAdapter.arrayList.clear();
+                pAdapter.EPIEventsList = tmp;
+                pAdapter.arrayList.addAll(tmp);
+
+                pAdapter.filter();
+            }
+        }
+    }
+
+    public class EventDateComparator implements Comparator<EPIEventPlanning>
+    {
+        @Override
+        public int compare(EPIEventPlanning lhs, EPIEventPlanning rhs) {
+            if (lhs.start == null)
+                return -1;
+            if (rhs.start == null)
+                return 1;
+            try {
+                java.util.Date ldate = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS").parse(lhs.start);
+                java.util.Date rdate = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS").parse(rhs.start);
+                if (ldate.compareTo(rdate) == 0 && lhs.end != null && rhs.end != null)
+                {
+                    ldate = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS").parse(lhs.end);
+                    rdate = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS").parse(rhs.end);
+                    return ldate.compareTo(rdate);
+                }
+                return ldate.compareTo(rdate);
+            } catch (ParseException e) {
+                e.printStackTrace();
+                return 1;
+            }
+        }
     }
 }

@@ -9,6 +9,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.woivre.thibault.epiandroid.R;
+import com.woivre.thibault.epiandroid.fragments.GradesFragment;
 import com.woivre.thibault.epiandroid.objects.EPIEventPlanning;
 import com.woivre.thibault.epiandroid.objects.EPIGrades;
 
@@ -22,9 +23,11 @@ import java.util.zip.Inflater;
  */
 public class GradesAdapter extends BaseAdapter {
     Context mContext;
-    List<EPIGrades.Grade> GradesList;
-    ArrayList<EPIGrades.Grade> arrayList;
+    public List<EPIGrades.Grade> GradesList;
+    public ArrayList<EPIGrades.Grade> arrayList;
     LayoutInflater inflater;
+
+    public String ModulesFilter = GradesFragment.NO_SELECTION_MODULE;
 
     public GradesAdapter(Context context, List<EPIGrades.Grade> gradesList)
     {
@@ -92,7 +95,7 @@ public class GradesAdapter extends BaseAdapter {
 
         if (grade.title != null)
         {
-            holder.titlemodule.setText(grade.title);
+            holder.title.setText(grade.title);
         }
         if (grade.titlemodule != null)
         {
@@ -109,23 +112,22 @@ public class GradesAdapter extends BaseAdapter {
         if (grade.date != null)
         {
             holder.date.setText(grade.date);
-            holder.date.setVisibility(View.VISIBLE);
         }
         if (grade.comment != null)
         {
-            holder.date.setText(grade.comment);
+            holder.comment.setText(grade.comment);
         }
 
         return convertView;
     }
 
-    public void filter(String scolarYear)
+    public void filter()
     {
         this.GradesList = new ArrayList<EPIGrades.Grade>();
 
         for (EPIGrades.Grade grade : arrayList)
         {
-            if (((Integer) grade.scolaryear.intValue()).toString().equals(scolarYear))
+            if (grade.titlemodule.equals(ModulesFilter) || ModulesFilter.equals(GradesFragment.NO_SELECTION_MODULE))
             {
                 GradesList.add(grade);
             }

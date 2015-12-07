@@ -1,6 +1,8 @@
 package com.woivre.thibault.epiandroid.adapters;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,11 +12,13 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.woivre.thibault.epiandroid.R;
+import com.woivre.thibault.epiandroid.activities.LoginActivity;
 import com.woivre.thibault.epiandroid.objects.EPIAllModules;
 import com.woivre.thibault.epiandroid.objects.EPIError;
 import com.woivre.thibault.epiandroid.objects.EPIJSONObject;
 import com.woivre.thibault.epiandroid.objects.EPIModule;
 import com.woivre.thibault.epiandroid.request.EPINetworkException;
+import com.woivre.thibault.epiandroid.request.IUpdateViewOnPostExecute;
 import com.woivre.thibault.epiandroid.request.RequestManager;
 
 import org.w3c.dom.Text;
@@ -67,6 +71,9 @@ public class ModulesAdapter extends BaseAdapter {
         TextView title;
         TextView credits;
         TextView semester;
+        TextView start;
+        TextView end;
+        TextView scolaryear;
 
         Button expand;
         Button register;
@@ -84,6 +91,9 @@ public class ModulesAdapter extends BaseAdapter {
             holder.title = (TextView)convertView.findViewById(R.id.module_title);
             holder.credits = (TextView)convertView.findViewById(R.id.module_credits);
             holder.semester = (TextView)convertView.findViewById(R.id.module_semester);
+            holder.start = (TextView)convertView.findViewById(R.id.module_start);
+            holder.end = (TextView)convertView.findViewById(R.id.module_end);
+            holder.scolaryear = (TextView)convertView.findViewById(R.id.modules_scolaryear);
             holder.expand = (Button)convertView.findViewById(R.id.module_expand);
             holder.register = (Button)convertView.findViewById(R.id.module_register);
             holder.unregister = (Button)convertView.findViewById(R.id.module_unregister);
@@ -109,12 +119,33 @@ public class ModulesAdapter extends BaseAdapter {
         {
             holder.semester.setText(((Integer) module.semester.intValue()).toString());
         }
+        if (module.begin != null)
+        {
+            holder.start.setText(module.begin);
+        }
+        else
+        {
+            holder.start.setText("NONE");
+        }
+        if (module.end != null)
+        {
+            holder.end.setText(module.end);
+        }
+        else
+        {
+            holder.end.setText("NONE");
+        }
+        if (module.scolaryear != null)
+        {
+            holder.scolaryear.setText(((Integer) module.scolaryear.intValue()).toString());
+        }
 
         Date end_registrationdate = null;
 
         if (module.end_register != null)
         {
-            try {
+            try
+            {
                 end_registrationdate = new SimpleDateFormat("yyyy-MM-dd").parse(module.end_register);
             } catch (ParseException e) {
                 e.printStackTrace();
@@ -143,103 +174,208 @@ public class ModulesAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 Log.d("INFO", "Pressed expand");
-//                try {
-//                    EPIJSONObject obj = RequestManager.ModuleRequest(token, ((Integer) module.scolaryear.intValue()).toString(), module.code, module.codeinstance);
-//                    if (obj instanceof EPIError)
-//                    {
-//                        if (module.title != null)
-//                        {
-//                            ((TextView) v.getRootView().findViewById(R.id.modules_msg)).setText("Couldn't get " + module.title + " informations");
-//                        }
-//                    }
-//                    else
-//                    {
-//                        if (((EPIModule) obj).description != null)
-//                        {
-//                            ((TextView) v.getRootView().findViewById(R.id.module_description)).setText(((EPIModule) obj).description);
-//                        }
-//                        if (((EPIModule) obj).competence != null)
-//                        {
-//                            ((TextView) v.getRootView().findViewById(R.id.module_competence)).setText(((EPIModule) obj).competence);
-//                        }
-//                        if (((EPIModule) obj).student_grade != null && !((EPIModule) obj).student_grade.isEmpty())
-//                        {
-//                            ((TextView) v.getRootView().findViewById(R.id.module_grade)).setText(((EPIModule) obj).student_grade);
-//                        }
-//                        else
-//                        {
-//                            ((TextView) v.getRootView().findViewById(R.id.module_description)).setText("NONE");
-//                        }
-//
-//                        v.getRootView().findViewById(R.id.modules_infoslayout).setVisibility(View.VISIBLE);
-//                        ((TextView) v.getRootView().findViewById(R.id.modules_msg)).setVisibility(View.GONE);
-//                    }
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
+                try
+                {
+                    RequestManager.ModuleRequest(token, ((Integer) module.scolaryear.intValue()).toString(), module.code, module.codeinstance, new UpdateOnExpand(holder, module, v.getRootView()));
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                    Intent intent = new Intent(mContext, LoginActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    mContext.startActivity(intent);
+                }
             }
         });
 
-//        holder.register.setOnClickListener(new View.OnClickListener() {
-//
-//            @Override
-//            public void onClick(View v) {
-//                EPIAllModules.Item module = ModulesList.get(position);
-//                try {
-//                    EPIError error = RequestManager.RegisterModuleRequest(token, ((Integer) module.scolaryear.intValue()).toString(), module.code, module.codeinstance);
-//                    if (error != null) {
-//                        ((TextView) v.getRootView().findViewById(R.id.modules_msg)).setText("Can't register to module : " + module.title);
-//                    } else {
-//                        ((TextView) v.getRootView().findViewById(R.id.modules_msg)).setText("Registered successfully to : " + module.title);
-//                        holder.unregister.setVisibility(View.VISIBLE);
-//                    }
-//                    ((TextView) v.getRootView().findViewById(R.id.modules_msg)).setVisibility(View.VISIBLE);
-//                    holder.register.setVisibility(View.GONE);
-//                    module.status = "ongoing";
-//                } catch (EPINetworkException e) {
-//                    e.printStackTrace();
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        });
+        holder.register.setOnClickListener(new View.OnClickListener() {
 
+            @Override
+            public void onClick(View v) {
+                try
+                {
+                    RequestManager.RegisterModuleRequest(token, ((Integer) module.scolaryear.intValue()).toString(), module.code, module.codeinstance, new UpdateOnRegister(holder, mContext, module));
+                } catch (Exception e) {
+                    Intent intent = new Intent(mContext, LoginActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    mContext.startActivity(intent);
+                }
+            }
+        });
 
-//        holder.unregister.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                try {
-//                    EPIAllModules.Item module = ModulesList.get(position);
-//                    EPIError error = RequestManager.UnregisterModuleRequest(token, ((Integer) module.scolaryear.intValue()).toString(), module.code, module.codeinstance);
-//                    if (error != null)
-//                    {
-//                        ((TextView) v.getRootView().findViewById(R.id.modules_msg)).setText("Can't unregister from module : " + module.title);
-//                    }
-//                    else
-//                    {
-//                        ((TextView) v.getRootView().findViewById(R.id.modules_msg)).setText("Unregistered successfully from : " + module.title);
-//                        holder.register.setVisibility(View.VISIBLE);
-//                    }
-//                    ((TextView) v.getRootView().findViewById(R.id.modules_msg)).setVisibility(View.VISIBLE);
-//                    holder.unregister.setVisibility(View.GONE);
-//                    module.status = "notregistered";
-//                    Log.d("BONJOUR", module.toString());
-//                }
-//                catch (EPINetworkException e)
-//                {
-//                    e.printStackTrace();
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        });
+        holder.unregister.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                try
+                {
+                    RequestManager.UnregisterModuleRequest(token, ((Integer) module.scolaryear.intValue()).toString(), module.code, module.codeinstance, new UpdateOnUnregister(holder, mContext, module));
+                } catch (Exception e) {
+                    Intent intent = new Intent(mContext, LoginActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    mContext.startActivity(intent);
+                }
+            }
+        });
 
         return convertView;
     }
 
+    public class UpdateOnRegister implements IUpdateViewOnPostExecute
+    {
+        ViewHolder holder;
+        Context context;
+        EPIAllModules.Item module;
+
+        public UpdateOnRegister(ViewHolder holder, Context context, EPIAllModules.Item module)
+        {
+            this.holder = holder;
+            this.context = context;
+            this.module = module;
+        }
+
+        @Override
+        public void UpdateView(EPIJSONObject[] objs) {
+            if (objs.length != 0 && objs[0] instanceof EPIError)
+            {
+                new android.app.AlertDialog.Builder(mContext)
+                        .setTitle("Error")
+                        .setMessage("Failed to register to " + holder.title.getText().toString())
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        })
+                        .show();
+            }
+            else
+            {
+                new android.app.AlertDialog.Builder(mContext)
+                        .setTitle("Success")
+                        .setMessage("Succeeded to register to " + holder.title.getText().toString())
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        })
+                        .show();
+
+                holder.register.setVisibility(View.GONE);
+                holder.unregister.setVisibility(View.VISIBLE);
+                module.status = "ongoing";
+            }
+        }
+    }
+
+    public class UpdateOnUnregister implements IUpdateViewOnPostExecute
+    {
+        ViewHolder holder;
+        Context context;
+        EPIAllModules.Item module;
+
+        public UpdateOnUnregister(ViewHolder holder, Context context, EPIAllModules.Item module)
+        {
+            this.holder = holder;
+            this.context = context;
+            this.module = module;
+        }
+
+        @Override
+        public void UpdateView(EPIJSONObject[] objs) {
+            if (objs.length != 0 && objs[0] instanceof EPIError)
+            {
+                new android.app.AlertDialog.Builder(mContext)
+                        .setTitle("Error")
+                        .setMessage("Failed to unregister to " + holder.title.getText().toString())
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        })
+                        .show();
+            }
+            else
+            {
+                new android.app.AlertDialog.Builder(mContext)
+                        .setTitle("Success")
+                        .setMessage("Succeeded to unregister to " + holder.title.getText().toString())
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        })
+                        .show();
+
+                holder.unregister.setVisibility(View.GONE);
+                holder.register.setVisibility(View.VISIBLE);
+                module.status = "notregistered";
+            }
+        }
+    }
+
+    public class UpdateOnExpand implements IUpdateViewOnPostExecute
+    {
+        ViewHolder holder;
+        View view;
+        EPIAllModules.Item module;
+
+        public UpdateOnExpand(ViewHolder holder, EPIAllModules.Item module, View view)
+        {
+            this.holder = holder;
+            this.view = view;
+            this.module = module;
+        }
+
+        @Override
+        public void UpdateView(EPIJSONObject[] objs) {
+            if (objs.length != 0 && objs[0] instanceof EPIError)
+            {
+                new android.app.AlertDialog.Builder(mContext)
+                        .setTitle("Error")
+                        .setMessage("Couldn't retrieve " + holder.title.getText().toString() + " informations")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        })
+                        .show();
+            }
+            else
+            {
+                if (((EPIModule) objs[0]).title != null)
+                {
+                    ((TextView) view.getRootView().findViewById(R.id.modules_title)).setText(((EPIModule) objs[0]).title);
+                }
+                if (((EPIModule) objs[0]).description != null)
+                {
+                    ((TextView) view.getRootView().findViewById(R.id.module_description)).setText(((EPIModule) objs[0]).description);
+                }
+                if (((EPIModule) objs[0]).competence != null)
+                {
+                    ((TextView) view.getRootView().findViewById(R.id.module_competence)).setText(((EPIModule) objs[0]).competence);
+                }
+                if (((EPIModule) objs[0]).student_grade != null)
+                {
+                    ((TextView) view.getRootView().findViewById(R.id.module_grade)).setText(((EPIModule) objs[0]).student_grade);
+                }
+                else
+                {
+                    ((TextView) view.getRootView().findViewById(R.id.module_grade)).setText("NONE");
+                }
+                view.getRootView().findViewById(R.id.modules_infoslayout).setVisibility(View.VISIBLE);
+                view.getRootView().findViewById(R.id.modules_list).setVisibility(View.GONE);
+            }
+        }
+    }
+
     public void filter()
     {
-        ModulesList = new ArrayList<EPIAllModules.Item>();
+        ModulesList = new ArrayList<>();
 
         for (EPIAllModules.Item item : arrayList)
         {

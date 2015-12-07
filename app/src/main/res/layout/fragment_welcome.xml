@@ -36,7 +36,7 @@
                 android:textSize="20sp"
                 android:gravity="center"
                 android:padding="5dp"
-                android:layout_marginBottom="5dp"
+                android:layout_marginBottom="2.5dp"
                 android:background="@color/grey"/>
 
             <LinearLayout
@@ -45,8 +45,8 @@
                 android:layout_weight="1"
                 android:orientation="horizontal"
                 android:padding="5dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
+                android:layout_marginTop="2.5dp"
+                android:layout_marginBottom="2.5dp"
                 android:background="@color/grey">
 
                 <TextView
@@ -71,8 +71,8 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:orientation="horizontal"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
+                android:layout_marginTop="2.5dp"
+                android:layout_marginBottom="2.5dp"
                 android:background="@color/grey">
 
                 <TextView
@@ -97,7 +97,7 @@
                 android:layout_height="0dp"
                 android:layout_weight="2"
                 android:orientation="vertical"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="2.5dp"
                 android:background="@color/grey">
 
                 <TextView
@@ -140,7 +140,9 @@
 
     <ListView android:id="@+id/welcome_messageslist"
         android:layout_width="match_parent"
-        android:layout_height="fill_parent">
+        android:layout_height="fill_parent"
+        android:dividerHeight="5dp"
+        android:divider="@android:color/transparent">
     </ListView>
 
 </LinearLayout>

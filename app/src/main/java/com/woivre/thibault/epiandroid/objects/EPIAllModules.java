@@ -7,19 +7,6 @@ import java.util.Objects;
 public class EPIAllModules extends EPIJSONObject {
     public Object[][] preload;
 
-//    public class Preload
-//    {
-//        public Objects[][] datas;
-//
-//        @Override
-//        public String toString() {
-//            String display;
-//
-//            display = new Gson().toJson(this);
-//            return display;
-//        }
-//    }
-
     public Item[] items;
 
     public class Item

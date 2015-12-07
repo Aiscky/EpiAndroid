@@ -1,69 +1,76 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.woivre.thibault.epiandroid.fragments.PlanningFragment">
+    tools:context="com.woivre.thibault.epiandroid.fragments.PlanningFragment"
+    android:orientation="vertical">
 
-    <TextView android:id="@+id/planning_displayday"
-        android:layout_width="wrap_content"
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:textSize="20dp"/>
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/planning_displayday"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:textSize="20dp" />
+
+        <Button android:id="@+id/planning_daypicker"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/planning_pickday"/>
+
+    </LinearLayout>
+
 
     <LinearLayout
         android:id="@+id/planning_buttonlayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_below="@id/planning_displayday">
+        android:orientation="horizontal">
 
         <Button android:id="@+id/prevday_button"
             android:layout_weight="1"
-            android:layout_width="fill_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/planning_prevday" />
 
         <Button android:id="@+id/nextday_button"
             android:layout_weight="1"
-            android:layout_width="fill_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/planning_nextday"
-            android:layout_toRightOf="@id/prevday_button" />
+            android:text="@string/planning_nextday" />
 
     </LinearLayout>
 
     <TextView android:id="@+id/planning_alert"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/planning_buttonlayout"
         android:layout_centerHorizontal="true"
         android:textSize="15dp"
         android:visibility="gone"
         android:layout_marginBottom="5dp"/>
 
-    <EditText android:id="@+id/planningevent_token"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Token"
-        android:inputType="number"
-        android:imeOptions="actionDone"
-        android:layout_below="@id/planning_alert"/>
-
     <CheckBox android:id="@+id/planningevents_registeredcheckbox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/planningevent_token"
         android:text="@string/checkboxregistered_hint"/>
 
     <CheckBox android:id="@+id/planningevents_modulescheckbox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/planningevents_registeredcheckbox"
         android:text="@string/checkboxmodules_hint"/>
 
     <ListView android:id="@+id/planningevents_list"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/planningevents_modulescheckbox"/>
+        android:dividerHeight="5dp"
+        android:divider="@android:color/transparent"/>
 
-</RelativeLayout>
+</LinearLayout>
